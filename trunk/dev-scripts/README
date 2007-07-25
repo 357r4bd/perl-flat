@@ -1,0 +1,1 @@
+This directory contains scripts that can be used to test during development without having to run Makefile.PL.  The purpose of this is to retain the original directory structure so that CVS commits may be made directly and one does not have to mess with "make" each time changes are made.
