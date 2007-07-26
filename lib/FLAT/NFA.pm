@@ -230,7 +230,7 @@ sub as_undirected {
     my @lines = (($#states+1));
     foreach (sort{$a <=> $b;}(keys(%edges))) { #<-- iterate over numerically sorted list of keys
       @{$edges{$_}} = sort {$a <=> $b;} $self->array_unique(@{$edges{$_}}); #<- make items unique and sort numerically
-      push(@lines,sprintf("%s (%s) %s",$_,($#{$edges{$_}}+1),join(' ',@{$edges{$_}})));
+      push(@lines,sprintf("%s(%s):%s",$_,($#{$edges{$_}}+1),join(' ',@{$edges{$_}})));
     }
     return join("\n",@lines);
  }
