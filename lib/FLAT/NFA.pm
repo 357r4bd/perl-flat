@@ -253,7 +253,7 @@ sub as_digraph {
 	push(@edges,$self->successors($s,$a));
       }
       @edges = sort {$a <=> $b;} $self->array_unique(@edges); #<- make items unique and sort numerically
-      push(@lines,sprintf("%s (%s) %s",$s,($#edges+1),join(' ',@edges)));
+      push(@lines,sprintf("%s(%s): %s",$s,($#edges+1),join(' ',@edges)));
     }
     return sprintf("%s\n%s",($#states+1),join("\n",@lines));
 }
