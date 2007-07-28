@@ -67,6 +67,9 @@ use vars qw(@EXPORT $AUTOLOAD);
 	     dfa2gv 
 	     nfa2gv 
 	     pfa2gv 
+	     dfa2undgv 
+	     nfa2undgv 
+	     pfa2undgv 
 	     dfa2digraph
 	     nfa2digraph
 	     pfa2digraph
@@ -115,9 +118,12 @@ COMMANDS:
 %perl -MFLAT -e
     "compare  're1','re2'"   # comares 2 regexs | see note [2] 
     "dump     're1'"         # dumps parse trees | see note[1]	   
-    "dfa2gv  're1'"          # dumps graphviz graph desc | see note[1]  
-    "nfa2gv  're1'"          # dumps graphviz graph desc | see note[1]  
-    "pfa2gv  're1'"          # dumps graphviz graph desc | see note[1]  
+    "dfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
+    "nfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
+    "pfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
+    "dfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
+    "nfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
+    "pfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
     dfa2digraph              # dumps directed graph without transitions
     nfa2digraph              # dumps directed graph without transitions
     pfa2digraph              # dumps directed graph without transitions
@@ -284,6 +290,69 @@ sub pfa2gv {
      { chomp;
        my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
        print $FA->as_graphviz;} 
+  }
+}
+
+#as_undirected_graphviz
+
+# dumps graphviz notation
+# Usage:
+# perl -MFLAT -e "dfa2undgv('a&b&c&d*e*')"
+sub dfa2undgv {
+  shift;  
+  use FLAT::Regex::WithExtraOps;
+  use FLAT::DFA;
+  use FLAT::NFA;
+  use FLAT::PFA;  
+  if (@_) 
+  { foreach (@_)
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
+      print $FA->as_undirected_graphviz;} }
+  else    
+  { while (<STDIN>) 
+     { chomp;
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
+       print $FA->as_undirected_graphviz;} 
+  }
+}
+
+# dumps graphviz notation
+# Usage:
+# perl -MFLAT -e "nfa2undgv('a&b&c&d*e*')"
+sub nfa2undgv {
+  shift;  
+  use FLAT::Regex::WithExtraOps;
+  use FLAT::DFA;
+  use FLAT::NFA;
+  use FLAT::PFA;  
+  if (@_) 
+  { foreach (@_)
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+      print $FA->as_undirected_graphviz;} }
+  else    
+  { while (<STDIN>) 
+     { chomp;
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+       print $FA->as_undirected_graphviz;} 
+  }
+}
+
+# dumps graphviz notation
+# Usage:
+# perl -MFLAT -e "pfa2undgv('a&b&c&d*e*')"
+sub pfa2undgv {
+  shift;  
+  use FLAT::Regex::WithExtraOps;
+  use FLAT::PFA;
+  if (@_) 
+  { foreach (@_)
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+      print $FA->as_undirected_graphviz;} }
+  else    
+  { while (<STDIN>) 
+     { chomp;
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+       print $FA->as_undirected_graphviz;} 
   }
 }
 

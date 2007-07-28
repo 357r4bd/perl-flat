@@ -286,6 +286,7 @@ sub as_gdl {
 }
 
 # Graphviz: dot, etc
+## digraph, directed
 sub as_graphviz {
     my $self = shift;
     
@@ -308,6 +309,32 @@ sub as_graphviz {
     }}
     
     return sprintf "digraph G {\ngraph [rankdir=LR]\n\n%s\n%s}\n",
+        join("", @states),
+        join("", @trans);
+}
+## undirected
+sub as_undirected_graphviz {
+    my $self = shift;
+    
+    my @states = map {
+        sprintf qq{%s [label="%s",shape=%s]\n},
+            $_,
+            ("$_"),
+            ("circle")
+    } $self->get_states;
+    
+    my @trans;
+    for my $s1 ($self->get_states) {
+    for my $s2 ($self->get_states) {
+        my $t = $self->get_transition($s1, $s2);
+        
+        if (defined $t) {
+            push @trans, sprintf qq[%s -- %s\n],
+                $s1, $s2, $t->as_string;
+        }
+    }}
+    
+    return sprintf "graph G {\ngraph [rankdir=LR]\n\n%s\n%s}\n",
         join("", @states),
         join("", @trans);
 }
