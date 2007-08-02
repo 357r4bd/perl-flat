@@ -45,22 +45,24 @@ if (!-e "dat/$ARGV[0].dat") {
   $dfa = retrieve "dat/$ARGV[0].dat";
 }
 
-my %nodes = $dfa->as_node_list();
-
-my %dflabel       = ();    # "global" lookup table for dflable
-my %backtracked   = (); # "global" lookup table for backtracked edges
-my %low           = (); # "global" lookup table for low
-my $lastDFLabel   = 0;
-my $recurse_level = 0; # tracks recurse level
-my @string        = ();
-# anonymous, recursive function
-
-&acyclic($dfa->get_starting());
+{
+  my %nodes = $dfa->as_node_list();
+  use vars qw(%dflabel %backtracked %low $lastDFLabel @string);
+  &acyclic($dfa->get_starting(),0);
+}
 
 # this function finds all acyclic paths in the dfa for each symbol!!
 sub acyclic {                            
   my $startNode = shift;
-# tree edge detection
+  my $recurse_level = shift;
+  if (0 == $recurse_level) {
+    my %dflabel       = (); # "global" lookup table for dflable
+    my %backtracked   = (); # "global" lookup table for backtracked edges
+    my %low           = (); # "global" lookup table for low
+    my $lastDFLabel   = 0;
+    my @string        = ();
+  }
+  # tree edge detection
   if (!exists($dflabel{$startNode})) {
     $dflabel{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
     foreach my $adjacent (keys(%{$nodes{$startNode}})) {

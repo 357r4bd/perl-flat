@@ -62,8 +62,9 @@ BEGIN {
 use base 'Exporter'; #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
 
-@EXPORT = qw(compare 
-             dump  
+@EXPORT = qw(allstrings
+             compare 
+             dump
 	     dfa2gv 
 	     nfa2gv 
 	     pfa2gv 
@@ -116,6 +117,7 @@ __________             .__    ___________.____         ___________
 
 COMMANDS: 
 %perl -MFLAT -e
+    "allstrings" 're1'       # creates all valid strings via acyclic path, no cycles yet
     "compare  're1','re2'"   # comares 2 regexs | see note [2] 
     "dump     're1'"         # dumps parse trees | see note[1]	   
     "dfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
@@ -175,6 +177,65 @@ http://perl-flat.sourceforge.net
 
 END
 }
+
+use vars qw(%nodes %dflabel %backtracked %low $lastDFLabel @string $dfa);
+# acyclic - no cycles
+sub allstrings {
+    my $self = shift;
+    my $PRE = shift;
+    if (!$PRE) {
+      while (<>) {
+        chomp;
+        $PRE = $_;
+        last;
+      }
+    } 
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::PFA;
+    use FLAT::NFA;
+    use FLAT::DFA;
+    use Storable;
+    # caches results, loads them in if detexted
+    if (!-e "$PRE.dat") {
+      $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
+      store $dfa, "$PRE.dat";
+    } else {
+      #print STDERR "$PRE.dat found..";
+      $dfa = retrieve "$PRE.dat";
+    }
+
+    %dflabel       = (); # "global" lookup table for dflable
+    %backtracked   = (); # "global" lookup table for backtracked edges
+    %low           = (); # "global" lookup table for low
+    $lastDFLabel   = 0;
+    @string        = ();
+    %nodes         = $dfa->as_node_list();
+    $self->acyclic($dfa->get_starting());
+}
+sub acyclic {
+  my $self = shift;
+  my $startNode = shift;
+  # tree edge detection
+  if (!exists($dflabel{$startNode})) {
+    $dflabel{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
+    foreach my $adjacent (keys(%{$nodes{$startNode}})) {
+      if (!exists($dflabel{$adjacent})) {      # initial tree edge
+        foreach my $symbol (@{$nodes{$startNode}{$adjacent}}) {
+	  push(@string,$symbol);
+          $self->acyclic($adjacent);
+	  if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
+            printf("%s\n",join('',@string));
+	  }
+	  pop(@string);
+        }
+      }
+    } 
+  }
+  # remove startNode entry to facilitate acyclic path determination
+  delete($dflabel{$startNode});
+  $lastDFLabel--;
+  return;     
+};
 
 # dumps directed graph using Kundu notation
 # Usage:
