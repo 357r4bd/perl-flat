@@ -42,14 +42,14 @@ my @backedge_list       = ();
 my @accepting_backedges = ();
 
 ### Event handling sub references
-my $onAcyclic     = sub { 
-                          push(@path_list,[@_]); # if (@path_list <= 5);                     # just get first 5
+my $onAcyclic     = sub { push(@path_list,[@_]); # if (@path_list <= 5);                   
+                          # just get first 5
                         };
-my $onBackedge    = sub { 
-                          push(@backedge_list,[@_]); #  if (@backedge_list <= 5);             # just get first 5
+my $onBackedge    = sub { push(@backedge_list,[@_]); #  if (@backedge_list <= 5);         
+                          # just get first 5
                         };
-my $onAccBackedge = sub { 
-                          push(@accepting_backedges,[@_]); # if (@accepting_backedges <= 5); # just get first 5
+my $onAccBackedge = sub { push(@accepting_backedges,[@_]); 
+                          # if (@accepting_backedges <= 5); # just get first 5
                         };
 
 ### Subroutines
@@ -87,7 +87,7 @@ sub sd_path {
  	  $onBackedge->(@{$path_ref},$adjacent); # yes
         } else {
           # handle the discovery of a non-accepting backedge
- 	  $onAccBackedge->(@{$path_ref},$adjacent);       # no
+ 	  $onAccBackedge->(@{$path_ref},$adjacent); # no
 	}
       }
     } # remove startNode entry to facilitate acyclic path determination

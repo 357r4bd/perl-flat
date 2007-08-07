@@ -79,6 +79,7 @@ use vars qw(@EXPORT $AUTOLOAD);
 	     pfa2undirected
 	     random_pre 
 	     random_re
+             savedfa
 	     test
 	     help
 	     );
@@ -134,6 +135,7 @@ COMMANDS:
     pfa2undirected           # dumps undirected graph without transitions
     random_pre 
     random_re
+    "savedfa 're1'"          # converts PRE to min dfa, then serializes to disk
     "test 'regex' 'string1'" # give a regex, reports if subsequent strings are valid
     help
 
@@ -178,11 +180,34 @@ http://perl-flat.sourceforge.net
 END
 }
 
+# save to a dat file
+sub savedfa {
+    my $self = shift;
+    my $PRE = shift;
+    # neat a better way to get input via stdin
+    if (!$PRE) {
+      while (<>) {
+        chomp;
+        $PRE = $_;
+        last;
+      }
+    } 
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::PFA;
+    use FLAT::NFA;
+    use FLAT::DFA;
+    use Storable;
+    # caches results, loads them in if detexted
+    my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
+    store $dfa, "$PRE.dat";
+}
+
 use vars qw(%nodes %dflabel %backtracked %low $lastDFLabel @string $dfa);
 # acyclic - no cycles
 sub allstrings {
     my $self = shift;
     my $PRE = shift;
+    # neat a better way to get input via stdin
     if (!$PRE) {
       while (<>) {
         chomp;
