@@ -1,8 +1,10 @@
-#!/usr/bin/env perl
+#!/bin/sh
 
-use strict;
-use warnings;
+# simply a dispatch table taking advantage of the commandline interface
 
-print <<END
-This is a stub for the soon to come finite-automata-shell interface for doing stupid regex tricks via commandline.
-END
+case "${1}" in
+random_re) perl -MFLAT -e random_re ;;
+random_pre) perl -MFLAT -e random_pre ;;
+help) perl -MFLAT -e help ;;
+*) echo function \""${1}"\" not available ;;
+esac
