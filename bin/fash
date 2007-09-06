@@ -4,5 +4,5 @@ use strict;
 use warnings;
 
 print <<END
-This is a stub for the soon to come finite-automata-shell interface for doing stupid regex tricks via CPAN.
+This is a stub for the soon to come finite-automata-shell interface for doing stupid regex tricks via commandline.
 END
