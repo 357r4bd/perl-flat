@@ -214,7 +214,7 @@ sub allstrings {
     # caches results, loads them in if detexted
     if (!-e "$PRE.dat") {
       $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
-      store $dfa, "$PRE.dat";
+      #store $dfa, "$PRE.dat";
     } else {
       #print STDERR "$PRE.dat found..";
       $dfa = retrieve "$PRE.dat";
