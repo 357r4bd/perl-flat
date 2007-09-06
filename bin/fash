@@ -1,7 +1,27 @@
 #!/bin/sh
 
-## TODO:
-# 1. allow for batch option (-b) for those functions that accept STDIN
+# NOTE: at some point, this may be rewritten in Perl, but it was eay and quick enough
+#       to do it this way so that is why.
+
+LISTENSTDIN=0
+while getopts 'b' option; do
+    case "$option" in
+      b) LISTENSTDIN=1  # specify INDEX to $OPTARG
+         shift # get reid of -b so the default vars below work
+         ;;
+    esac
+done
+
+if [ ${LISTENSTDIN} -eq 1 ]; then
+  IFS="" # ensures that leading spaces are retained
+  while read -r IN <&0 ; do # break after 1 sec of no stdin
+  if [ -z "${ALL}" ]; then
+    ALL="${IN}";
+  else
+    ALL="${ALL}\n${IN}";
+  fi
+  done
+fi
 
 case "${1}" in
   dump)           perl -MFLAT -e "dump(\"${2}\")" ;;
@@ -21,7 +41,13 @@ case "${1}" in
   random_re)      perl -MFLAT -e random_re ;;
   random_pre)     perl -MFLAT -e random_pre ;;
   compare)        perl -MFLAT -e "compare(\"${2}\",\"${3}\")" ;;
-  test)           perl -MFLAT -e "test(\"${2}\",\"${3}\")" ;;
+  test) # how we'll handle STDIN           
+    if [ ${LISTENSTDIN} -eq 1 ]; then
+      echo "$ALL" |  perl -MFLAT -e "test"
+    else
+      perl -MFLAT -e "test(\"${2}\",\"${3}\")"
+    fi
+    ;; 
   savedfa)        perl -MFLAT -e "savedfa(\"${2}\")" ;;
   help)           perl -MFLAT -e help ;;
   *) echo function \""${1}"\" not available ;;
