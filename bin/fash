@@ -1,10 +1,28 @@
 #!/bin/sh
 
-# simply a dispatch table taking advantage of the commandline interface
+## TODO:
+# 1. allow for batch option (-b) for those functions that accept STDIN
 
 case "${1}" in
-random_re) perl -MFLAT -e random_re ;;
-random_pre) perl -MFLAT -e random_pre ;;
-help) perl -MFLAT -e help ;;
-*) echo function \""${1}"\" not available ;;
+  dump)           perl -MFLAT -e "dump(\"${2}\")" ;;
+  dfa2gv)         perl -MFLAT -e "dfa2gv(\"${2}\")" ;;
+  nfa2gv)         perl -MFLAT -e "nfa2gv(\"${2}\")" ;;
+  pfa2gv)         perl -MFLAT -e "pfa2gv(\"${2}\")" ;;
+  dfa2undgv)      perl -MFLAT -e "dfa2undgv(\"${2}\")" ;;
+  nfa2undgv)      perl -MFLAT -e "nfa2undgv(\"${2}\")" ;;
+  pfa2undgv)      perl -MFLAT -e "pfa2undgv(\"${2}\")" ;;
+  allstrings)     perl -MFLAT -e "allstrings(\"${2}\")" ;;
+  dfa2digraph)    perl -MFLAT -e "dfa2digraph(\"${2}\")" ;;         
+  nfa2digraph)    perl -MFLAT -e "nfa2digraph(\"${2}\")" ;;           
+  pfa2digraph)    perl -MFLAT -e "pfa2digraph(\"${2}\")" ;;            
+  dfa2undirected) perl -MFLAT -e "dfa2undirected(\"${2}\")" ;;         
+  nfa2undirected) perl -MFLAT -e "nfa2undirected(\"${2}\")" ;;          
+  pfa2undirected) perl -MFLAT -e "pfa2undirected(\"${2}\")" ;;           
+  random_re)      perl -MFLAT -e random_re ;;
+  random_pre)     perl -MFLAT -e random_pre ;;
+  compare)        perl -MFLAT -e "compare(\"${2}\",\"${3}\")" ;;
+  test)           perl -MFLAT -e "test(\"${2}\",\"${3}\")" ;;
+  savedfa)        perl -MFLAT -e "savedfa(\"${2}\")" ;;
+  help)           perl -MFLAT -e help ;;
+  *) echo function \""${1}"\" not available ;;
 esac
