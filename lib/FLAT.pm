@@ -108,13 +108,13 @@ __________             .__    ___________.____         ___________
  |____|    \___  >__|  |____/  \___  /   |_______ (____  /____|   
                \/                  \/            \/    \/    
 	       
-  NB: Everything is wrt parallel regular expressions, i.e., 
-  NB: with the addtional shuffle operator, "&".  All this 
-  NB: means is that you can use the ambersand (&) as a symbol
-  NB: in the regular expressions you submit because it will be 
-  NB: detected as an operator.That said, if you avoid using
-  NB: the "&" operator, you can forget about all that shuffle
-  NB: business.
+  Everything is wrt parallel regular expressions, i.e., 
+  with the addtional shuffle operator, "&".  All this 
+  means is that you can use the ambersand (&) as a symbol
+  in the regular expressions you submit because it will be 
+  detected as an operator.That said, if you avoid using
+  the "&" operator, you can forget about all that shuffle
+  business.
 
 COMMANDS: 
 %perl -MFLAT -e
@@ -151,20 +151,11 @@ NOTES:
     'compare' command, "ab+ac" == "xy+xz" == "z(x+y)". This however 
     does not translate into the situation where "ab+ac" will accept 
     the same LITERAL strings as "z(x+y)" because the symbols are obviously
-    different.  Once we implement the "test" command, used to test strings 
-    against a regular expression, a concrete example will be provided.   		    
+    different.	    
 		   
 TO DO:
-1   Implement "getstrings 're1' [opts...]" # given regex, pump strings 
-    based on options
-   
-2   Implement "variations 're1' [opts...]" # given regex will provide 
-    equivalents
-
-3   Allow random_pre and random_re to accept the number of regexes, the
-    number of characters, and the character set;  eventually it might be 
-    useful to allow modification of the chances of the different operators
-    occuring...
+1.  cyclic regex string gen
+2.  dfa->re
 
 CREDITS:
 Blockhead, CPAN.pm (for the example of how to implement these one liners), 
@@ -175,7 +166,7 @@ Perl FLAT and all included modules are released under the same terms as Perl
 itself.  Cheers.
 
 SEE:
-http://perl-flat.sourceforge.net
+http://www.0x743.com/flat
 
 END
 }
