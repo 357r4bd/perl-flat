@@ -9,30 +9,10 @@ use Carp;
 use base 'Exporter'; #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
 
-@EXPORT = qw(allstrings
-             compare 
-             dump
-	     dfa2gv 
-	     nfa2gv 
-	     pfa2gv 
-	     dfa2undgv 
-	     nfa2undgv 
-	     pfa2undgv 
-	     dfa2digraph
-	     nfa2digraph
-	     pfa2digraph
-	     dfa2undirected
-	     nfa2undirected
-	     pfa2undirected
-	     random_pre 
-	     random_re
-             savedfa
-	     test
-	     help
+@EXPORT = qw(allstrings compare dump dfa2gv nfa2gv pfa2gv dfa2undgv nfa2undgv pfa2undgv dfa2digraph
+	     nfa2digraph pfa2digraph dfa2undirected nfa2undirected pfa2undirected random_pre random_re
+             savedfa test help
 	     );
-
-# Todo: validate, test (string against re), validate (re), 
-#       alternate (give re, list some alternates), getstrings (gen strings give re)	     
 
 sub AUTOLOAD {
     my($l) = $AUTOLOAD;
@@ -43,8 +23,6 @@ sub AUTOLOAD {
 	FLAT::OneLiners->$l(@_);
     }
 }
-
-package FLAT::OneLiners;
 
 sub help {
 print <<END
@@ -74,17 +52,17 @@ COMMANDS:
     "dfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
     "nfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
     "pfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
-    dfa2digraph              # dumps directed graph without transitions
-    nfa2digraph              # dumps directed graph without transitions
-    pfa2digraph              # dumps directed graph without transitions
-    dfa2undirected           # dumps undirected graph without transitions
-    nfa2undirected           # dumps undirected graph without transitions
-    pfa2undirected           # dumps undirected graph without transitions
-    random_pre 
-    random_re
+    "dfa2digraph 're1'"      # dumps directed graph without transitions
+    "nfa2digraph 're1'"      # dumps directed graph without transitions
+    "pfa2digraph 're1'"      # dumps directed graph without transitions
+    "dfa2undirected 're1'"   # dumps undirected graph without transitions
+    "nfa2undirected 're1'"   # dumps undirected graph without transitions
+    "pfa2undirected 're1'"   # dumps undirected graph without transitions
+     random_pre 
+     random_re
     "savedfa 're1'"          # converts PRE to min dfa, then serializes to disk
     "test 'regex' 'string1'" # give a regex, reports if subsequent strings are valid
-    help
+     help
 
 NOTES:
 [1] This means you could presumably do something like the following:
@@ -100,10 +78,6 @@ NOTES:
     the same LITERAL strings as "z(x+y)" because the symbols are obviously
     different.	    
 		   
-TO DO:
-1.  cyclic regex string gen
-2.  dfa->re
-
 CREDITS:
 Blockhead, CPAN.pm (for the example of how to implement these one liners), 
 and #perl on irc.freenode.net for pointing out something I missed when 

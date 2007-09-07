@@ -3,6 +3,66 @@
 # NOTE: at some point, this may be rewritten in Perl, but it was eay and quick enough
 #       to do it this way so that is why.
 
+showhelp()
+{ echo "" 
+  echo "fash provides an easier commandline interface to one liners available via FLAT::CMD" 
+  echo "  Usage:"
+  echo "   1.   % flat <action> [parameter1 parameter2 ... parameterN]"
+  echo "   2.   % cat file.dat | fash -b test"
+  echo ""
+  echo "  Actions:"
+  echo "    dump \"regular_expression\""
+  echo "        Perl dump parse tree of given regex."
+  echo ""
+  echo "    dfa2gv \"regular_expression\""
+  echo "        Dumps out FA in graphviz input format; useful for visualizing FA"
+  echo ""
+  echo "    nfa2gv \"regular_expression\""
+  echo "        Dumps out FA in graphviz input format; useful for visualizing FA"
+  echo ""
+  echo "    pfa2gv \"regular_expression\""
+  echo "        Dumps out FA in graphviz input format; useful for visualizing FA"
+  echo ""
+  echo "    dfa2undgv \"regular_expression\""
+  echo "        Dumps out undirected graph underlying the FA in graphviz input format; useful for visualizing FA"
+  echo ""
+  echo "    nfa2undgv \"regular_expression\""
+  echo "        Dumps out undirected graph underlying the FA in graphviz input format; useful for visualizing FA"
+  echo ""
+  echo "    pfa2undgv \"regular_expression\""
+  echo "        Dumps out undirected graph underlying the FA in graphviz input format; useful for visualizing FA"
+  echo ""
+  echo "    dfa2digraph \"regular_expression\""
+  echo "        Outputs digraph of FA for input into a program that might operate over the underlying graph."
+  echo ""
+  echo "    nfa2digraph \"regular_expression\""
+  echo "        Outputs digraph of FA for input into a program that might operate over the underlying graph."
+  echo ""
+  echo "    pfa2digraph \"regular_expression\""
+  echo "        Outputs digraph of FA for input into a program that might operate over the underlying graph."
+  echo ""
+  echo "    dfa2undirectedgraph \"regular_expression\""
+  echo "        Outputs undirected graph of FA for input into a program that might operate over the underlying graph."
+  echo ""
+  echo "    nfa2undirectedgraph \"regular_expression\""
+  echo "        Outputs undirected graph of FA for input into a program that might operate over the underlying graph."
+  echo ""
+  echo "    pfa2undirectedgraph \"regular_expression\""
+  echo "        Outputs undirected graph of FA for input into a program that might operate over the underlying graph."
+  echo ""
+  echo "    test \"regular_expression\" \"test_string\"" 
+  echo "        Given a regular expression, tests the given string(s) for acceptance."
+  echo ""
+  echo "    compare \"regular_expression1\" \"regular_expression2\""
+  echo "        Compares 2 regularexpressions."
+  echo ""
+  echo "  Notes on 'test' action:"
+  echo "    this action may accept STDIN when using the -b flag; the "
+  echo "    format of the file should be a regular expression in the "
+  echo "    top line, followed by strings to test for acceptance."
+  echo ""
+}
+
 LISTENSTDIN=0
 while getopts 'b' option; do
     case "$option" in
@@ -49,6 +109,6 @@ case "${1}" in
     fi
     ;; 
   savedfa)        perl -MFLAT::CMD -e "savedfa(\"${2}\")" ;;
-  help)           perl -MFLAT::CMD -e help ;;
+  help)           showhelp ;;
   *) echo function \""${1}"\" not available ;;
 esac
