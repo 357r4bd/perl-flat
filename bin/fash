@@ -24,31 +24,31 @@ if [ ${LISTENSTDIN} -eq 1 ]; then
 fi
 
 case "${1}" in
-  dump)           perl -MFLAT -e "dump(\"${2}\")" ;;
-  dfa2gv)         perl -MFLAT -e "dfa2gv(\"${2}\")" ;;
-  nfa2gv)         perl -MFLAT -e "nfa2gv(\"${2}\")" ;;
-  pfa2gv)         perl -MFLAT -e "pfa2gv(\"${2}\")" ;;
-  dfa2undgv)      perl -MFLAT -e "dfa2undgv(\"${2}\")" ;;
-  nfa2undgv)      perl -MFLAT -e "nfa2undgv(\"${2}\")" ;;
-  pfa2undgv)      perl -MFLAT -e "pfa2undgv(\"${2}\")" ;;
-  allstrings)     perl -MFLAT -e "allstrings(\"${2}\")" ;;
-  dfa2digraph)    perl -MFLAT -e "dfa2digraph(\"${2}\")" ;;         
-  nfa2digraph)    perl -MFLAT -e "nfa2digraph(\"${2}\")" ;;           
-  pfa2digraph)    perl -MFLAT -e "pfa2digraph(\"${2}\")" ;;            
-  dfa2undirected) perl -MFLAT -e "dfa2undirected(\"${2}\")" ;;         
-  nfa2undirected) perl -MFLAT -e "nfa2undirected(\"${2}\")" ;;          
-  pfa2undirected) perl -MFLAT -e "pfa2undirected(\"${2}\")" ;;           
-  random_re)      perl -MFLAT -e random_re ;;
-  random_pre)     perl -MFLAT -e random_pre ;;
-  compare)        perl -MFLAT -e "compare(\"${2}\",\"${3}\")" ;;
+  dump)           perl -MFLAT::CMD -e "dump(\"${2}\")" ;;
+  dfa2gv)         perl -MFLAT::CMD -e "dfa2gv(\"${2}\")" ;;
+  nfa2gv)         perl -MFLAT::CMD -e "nfa2gv(\"${2}\")" ;;
+  pfa2gv)         perl -MFLAT::CMD -e "pfa2gv(\"${2}\")" ;;
+  dfa2undgv)      perl -MFLAT::CMD -e "dfa2undgv(\"${2}\")" ;;
+  nfa2undgv)      perl -MFLAT::CMD -e "nfa2undgv(\"${2}\")" ;;
+  pfa2undgv)      perl -MFLAT::CMD -e "pfa2undgv(\"${2}\")" ;;
+  allstrings)     perl -MFLAT::CMD -e "allstrings(\"${2}\")" ;;
+  dfa2digraph)    perl -MFLAT::CMD -e "dfa2digraph(\"${2}\")" ;;         
+  nfa2digraph)    perl -MFLAT::CMD -e "nfa2digraph(\"${2}\")" ;;           
+  pfa2digraph)    perl -MFLAT::CMD -e "pfa2digraph(\"${2}\")" ;;            
+  dfa2undirected) perl -MFLAT::CMD -e "dfa2undirected(\"${2}\")" ;;         
+  nfa2undirected) perl -MFLAT::CMD -e "nfa2undirected(\"${2}\")" ;;          
+  pfa2undirected) perl -MFLAT::CMD -e "pfa2undirected(\"${2}\")" ;;           
+  random_re)      perl -MFLAT::CMD -e random_re ;;
+  random_pre)     perl -MFLAT::CMD -e random_pre ;;
+  compare)        perl -MFLAT::CMD -e "compare(\"${2}\",\"${3}\")" ;;
   test) # how we'll handle STDIN           
     if [ ${LISTENSTDIN} -eq 1 ]; then
-      echo "$ALL" |  perl -MFLAT -e "test"
+      echo "$ALL" |  perl -MFLAT::CMD -e "test"
     else
-      perl -MFLAT -e "test(\"${2}\",\"${3}\")"
+      perl -MFLAT::CMD -e "test(\"${2}\",\"${3}\")"
     fi
     ;; 
-  savedfa)        perl -MFLAT -e "savedfa(\"${2}\")" ;;
-  help)           perl -MFLAT -e help ;;
+  savedfa)        perl -MFLAT::CMD -e "savedfa(\"${2}\")" ;;
+  help)           perl -MFLAT::CMD -e help ;;
   *) echo function \""${1}"\" not available ;;
 esac
