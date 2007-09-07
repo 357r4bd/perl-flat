@@ -20,7 +20,7 @@ sub AUTOLOAD {
     my(%EXPORT);
     @EXPORT{@EXPORT} = '';
     if (exists $EXPORT{$l}){
-	FLAT::OneLiners->$l(@_);
+	FLAT::CMD->$l(@_);
     }
 }
 
@@ -94,7 +94,6 @@ END
 
 # save to a dat file
 sub savedfa {
-    my $self = shift;
     my $PRE = shift;
     # neat a better way to get input via stdin
     if (!$PRE) {
@@ -117,7 +116,6 @@ sub savedfa {
 use vars qw(%nodes %dflabel %backtracked %low $lastDFLabel @string $dfa);
 # acyclic - no cycles
 sub allstrings {
-    my $self = shift;
     my $PRE = shift;
     # neat a better way to get input via stdin
     if (!$PRE) {
@@ -147,10 +145,9 @@ sub allstrings {
     $lastDFLabel   = 0;
     @string        = ();
     %nodes         = $dfa->as_node_list();
-    $self->acyclic($dfa->get_starting());
+    acyclic($dfa->get_starting());
 }
 sub acyclic {
-  my $self = shift;
   my $startNode = shift;
   # tree edge detection
   if (!exists($dflabel{$startNode})) {
@@ -159,7 +156,7 @@ sub acyclic {
       if (!exists($dflabel{$adjacent})) {      # initial tree edge
         foreach my $symbol (@{$nodes{$startNode}{$adjacent}}) {
 	  push(@string,$symbol);
-          $self->acyclic($adjacent);
+          acyclic($adjacent);
 	  if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
             printf("%s\n",join('',@string));
 	  }
@@ -178,7 +175,6 @@ sub acyclic {
 # Usage:
 # perl -MFLAT -e "pfa2directed('a&b&c&d*e*')"
 sub test {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::PFA;
   use FLAT::NFA;
@@ -215,7 +211,6 @@ sub test {
 # perl -MFLAT -e "dump('re1','re2',...,'reN')"
 # perl -MFLAT -e dump < list_of_regexes.dat
 sub dump {
-  shift;
   use FLAT::Regex::WithExtraOps;
   use Data::Dumper;
   if (@_) 
@@ -234,7 +229,6 @@ sub dump {
 # Usage:
 # perl -MFLAT -e "dfa2gv('a&b&c&d*e*')"
 sub dfa2gv {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::NFA;
@@ -255,7 +249,6 @@ sub dfa2gv {
 # Usage:
 # perl -MFLAT -e "nfa2gv('a&b&c&d*e*')"
 sub nfa2gv {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::NFA;
@@ -276,7 +269,6 @@ sub nfa2gv {
 # Usage:
 # perl -MFLAT -e "pfa2gv('a&b&c&d*e*')"
 sub pfa2gv {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::PFA;
   if (@_) 
@@ -297,7 +289,6 @@ sub pfa2gv {
 # Usage:
 # perl -MFLAT -e "dfa2undgv('a&b&c&d*e*')"
 sub dfa2undgv {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::NFA;
@@ -318,7 +309,6 @@ sub dfa2undgv {
 # Usage:
 # perl -MFLAT -e "nfa2undgv('a&b&c&d*e*')"
 sub nfa2undgv {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::NFA;
@@ -339,7 +329,6 @@ sub nfa2undgv {
 # Usage:
 # perl -MFLAT -e "pfa2undgv('a&b&c&d*e*')"
 sub pfa2undgv {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::PFA;
   if (@_) 
@@ -358,7 +347,6 @@ sub pfa2undgv {
 # Usage:
 # perl -MFLAT -e "dfa2directed('a&b&c&d*e*')"
 sub dfa2digraph {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::NFA;
@@ -381,7 +369,6 @@ sub dfa2digraph {
 # Usage:
 # perl -MFLAT -e "nfa2directed('a&b&c&d*e*')"
 sub nfa2digraph {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::NFA;
@@ -403,7 +390,6 @@ sub nfa2digraph {
 # Usage:
 # perl -MFLAT -e "pfa2directed('a&b&c&d*e*')"
 sub pfa2digraph {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::PFA;
   if (@_) 
@@ -423,7 +409,6 @@ sub pfa2digraph {
 # Usage:
 # perl -MFLAT -e "dfa2undirected('a&b&c&d*e*')"
 sub dfa2undirected {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::NFA;
@@ -446,7 +431,6 @@ sub dfa2undirected {
 # Usage:
 # perl -MFLAT -e "nfa2undirected('a&b&c&d*e*')"
 sub nfa2undirected {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::NFA;
@@ -468,7 +452,6 @@ sub nfa2undirected {
 # Usage:
 # perl -MFLAT -e "pfa2undirected('a&b&c&d*e*')"
 sub pfa2undirected {
-  shift;  
   use FLAT::Regex::WithExtraOps;
   use FLAT::PFA;
   if (@_) 
@@ -488,7 +471,6 @@ sub pfa2undirected {
 # Usage:
 # perl -MFLAT -e "compare('a','a&b&c&d*e*')" #<-- no match, btw
 sub compare {
-  shift;
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
   use FLAT::PFA;
@@ -507,7 +489,6 @@ sub compare {
 # Usage:
 # perl -MFLAT -e random_pre
 sub random_pre {
-  shift;
   my $and_chance = shift;
   # skirt around deep recursion warning annoyance
   local $SIG{__WARN__} = sub { $_[0] =~ /^Deep recursion/ or warn $_[0] };
