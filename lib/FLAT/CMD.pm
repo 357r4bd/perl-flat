@@ -9,7 +9,7 @@ use Carp;
 use base 'Exporter'; #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
 
-@EXPORT = qw(allstrings compare dump dfa2gv nfa2gv pfa2gv dfa2undgv nfa2undgv pfa2undgv dfa2digraph
+@EXPORT = qw(somestrings compare dump dfa2gv nfa2gv pfa2gv dfa2undgv nfa2undgv pfa2undgv dfa2digraph
 	     nfa2digraph pfa2digraph dfa2undirected nfa2undirected pfa2undirected random_pre random_re
              savedfa test help
 	     );
@@ -41,9 +41,8 @@ __________             .__    ___________.____         ___________
   the "&" operator, you can forget about all that shuffle
   business.
 
-COMMANDS: 
-%perl -MFLAT -e
-    "allstrings" 're1'       # creates all valid strings via acyclic path, no cycles yet
+%perl -MFLAT::CMD -e
+    "somestrings" 're1'       # creates all valid strings via acyclic path, no cycles yet
     "compare  're1','re2'"   # comares 2 regexs | see note [2] 
     "dump     're1'"         # dumps parse trees | see note[1]	   
     "dfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
@@ -115,7 +114,7 @@ sub savedfa {
 
 use vars qw(%nodes %dflabel %backtracked %low $lastDFLabel @string $dfa);
 # acyclic - no cycles
-sub allstrings {
+sub somestrings {
     my $PRE = shift;
     # neat a better way to get input via stdin
     if (!$PRE) {
@@ -131,8 +130,9 @@ sub allstrings {
     use FLAT::DFA;
     use Storable;
     # caches results, loads them in if detexted
+    my $RE = FLAT::Regex::WithExtraOps->new($PRE);
     if (!-e "$PRE.dat") {
-      $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
+      $dfa = $RE->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
       #store $dfa, "$PRE.dat";
     } else {
       #print STDERR "$PRE.dat found..";
@@ -145,6 +145,8 @@ sub allstrings {
     $lastDFLabel   = 0;
     @string        = ();
     %nodes         = $dfa->as_node_list();
+    # output format is the actual PRE followed by all found strings
+    print $RE->as_string(),"\n";
     acyclic($dfa->get_starting());
 }
 sub acyclic {
