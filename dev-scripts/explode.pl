@@ -12,7 +12,10 @@ use strict;
 use warnings;
 use lib qw(../lib);
 use FLAT::DFA;
+use FLAT::NFA;
+use FLAT::PFA;
 use FLAT::Regex::WithExtraOps;
+
 my $dfa;
 
 ### Caching Mechanism
@@ -84,10 +87,10 @@ sub sd_path {
         # does backedge destination also accept?
         if ($dfa->array_is_subset([$adjacent],[@{$goals_ref}])) {
           # handle the discovery of an accepting backedge
- 	  $onBackedge->(@{$path_ref},$adjacent); # yes
+ 	  $onAccBackedge->(@{$path_ref},$adjacent); # yes
         } else {
           # handle the discovery of a non-accepting backedge
- 	  $onAccBackedge->(@{$path_ref},$adjacent); # no
+ 	  $onBackedge->(@{$path_ref},$adjacent); # no
 	}
       }
     } # remove startNode entry to facilitate acyclic path determination
