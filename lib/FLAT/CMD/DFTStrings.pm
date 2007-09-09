@@ -1,6 +1,6 @@
-# all strings available via acyclic path from the DFA start state to any all of the final states
+# all strings available via depth first traversal, including back edges that happen to land on an accepting state
 
-package FLAT::CMD::AcyclicStrings;
+package FLAT::CMD::DFTStrings;
 use base 'FLAT::CMD';
 use FLAT;
 use FLAT::Regex;
@@ -59,9 +59,9 @@ sub as_strings {
     %nodes         = $dfa->as_node_list();
     # output format is the actual PRE followed by all found strings
     print $RE->as_string(),"\n";
-    acyclic($dfa->get_starting());
+    dft($dfa->get_starting());
 }
-sub acyclic {
+sub dft {
   my $startNode = shift;
   # tree edge detection
   if (!exists($dflabel{$startNode})) {
@@ -70,11 +70,21 @@ sub acyclic {
       if (!exists($dflabel{$adjacent})) {      # initial tree edge
         foreach my $symbol (@{$nodes{$startNode}{$adjacent}}) {
 	  push(@string,$symbol);
-          acyclic($adjacent);
+          dft($adjacent);
 	  if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
             printf("%s\n",join('',@string));
-	  }
+	  } 
 	  pop(@string);
+        }
+      } else { # detects back edge, but string still valid if we've landed on an accepting state
+        if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) {
+          foreach my $symbol (@{$nodes{$startNode}{$adjacent}}) {
+	    push(@string,$symbol);
+	    if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
+              printf("%s\n",join('',@string));
+  	    } 
+  	    pop(@string);
+          }
         }
       }
     } 
