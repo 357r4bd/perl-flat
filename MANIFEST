@@ -8,6 +8,7 @@ lib/FLAT/Regex/Parser.pm
 lib/FLAT/Regex/Transform.pm
 lib/FLAT/Regex.pm
 lib/FLAT/CMD.pm
+lib/FLAT/CMD/AcyclicStrings.pm
 lib/FLAT/FA.pm
 lib/FLAT/NFA.pm
 lib/FLAT/DFA.pm
