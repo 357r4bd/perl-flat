@@ -33,32 +33,7 @@ if (!-e "dat/$ARGV[0].dat") {
 
 my %nodes = $dfa->as_node_list();
 
-use constant MAX_EXPORE_LEVEL => 0;
-my $explore_level = 0;
 
-### Event handling sub references
-my $onAccepting = sub { my @acyclic_path = @_; 
-                        my $original = join('~>',@acyclic_path);
-
-                        print join('~>',@acyclic_path) if ($explore_level == MAX_EXPORE_LEVEL);
-
-                        return if ($explore_level > MAX_EXPORE_LEVEL);
-                        $explore_level++;
-                        print "main: $original";
-
-                        # goal nodes are everything leading up the start node
-                        # initialize goals
-                        my @goals = shift @acyclic_path;
-                        foreach my $node (@acyclic_path) {
-                          printf("start: %s; goals: %s\n",$node,join(',',@goals));                          
-                          my @path           = (); # scoped, stores path
-                          my %dflabel        = (); # scoped lookup table for dflable
-                          my $lastDFLabel    =  0;
-                          sd_path($node,[@goals],[@path],\%dflabel,$lastDFLabel);
-                          push(@goals,shift @acyclic_path);
-                        }
-                        $explore_level--;
-                      };
 
 ### Subroutines
 sub main {
@@ -86,15 +61,11 @@ sub sd_path {
 	# assumes some base path found
         if ($dfa->array_is_subset([$adjacent],[@{$goals_ref}])) {   
            # handle discovery of an acyclic path to a goal 
-	   $onAccepting->(@{$path_ref},$adjacent);
-	} # back edge detection... 
-      } else {
-        # does backedge destination also accept?
-        if ($dfa->array_is_subset([$adjacent],[@{$goals_ref}])) {
-          # handle the discovery of an accepting backedge
- 	  $onAccepting->(@{$path_ref},$adjacent); # yes
+	   explore(@{$path_ref},$adjacent);
+	} else { 
+           # back edge detection...  
         }
-      }
+      } 
     } # remove startNode entry to facilitate acyclic path determination
     delete($dflabel_ref->{$startNode});
   }
@@ -102,9 +73,33 @@ sub sd_path {
   return @{$path_ref};
 }
 
-sub explode {
+### Event handling sub references
+use constant MAX_EXPORE_LEVEL => 1;
+my $explore_level = 0;
 
+sub explore { 
+  my @acyclic_path = @_; 
+  my $original = join('~>',@acyclic_path);
+  print join('~>',@acyclic_path) if ($explore_level == MAX_EXPORE_LEVEL);
+
+  return if ($explore_level >= MAX_EXPORE_LEVEL);
+  $explore_level++;
+  print "main($explore_level): $original";
+
+  # goal nodes are everything leading up the start node
+  # initialize goals
+  my @goals = shift @acyclic_path;
+  foreach my $node (@acyclic_path) {
+    printf("start: %s; potential goals: %s\n",$node,join(',',@goals));                          
+    my @path           = (); # scoped, stores path
+    my %dflabel        = (); # scoped lookup table for dflable
+    my $lastDFLabel    =  0;
+    sd_path($node,[@goals],[@path],\%dflabel,$lastDFLabel);
+    push(@goals,$node);
+  }
+  $explore_level--;
 }
+
 
 sub path_to_string {
 
