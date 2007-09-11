@@ -82,20 +82,20 @@ sub explore {
   my $original = join('~>',@acyclic_path);
   print join('~>',@acyclic_path) if ($explore_level == MAX_EXPORE_LEVEL);
 
-  return if ($explore_level >= MAX_EXPORE_LEVEL);
+  return if ($explore_level == MAX_EXPORE_LEVEL);
   $explore_level++;
   print "main($explore_level): $original";
 
   # goal nodes are everything leading up the start node
   # initialize goals
-  my @goals = shift @acyclic_path;
+  my @goals = (); #shift @acyclic_path;
   foreach my $node (@acyclic_path) {
+    push(@goals,$node);
     printf("start: %s; potential goals: %s\n",$node,join(',',@goals));                          
     my @path           = (); # scoped, stores path
     my %dflabel        = (); # scoped lookup table for dflable
     my $lastDFLabel    =  0;
     sd_path($node,[@goals],[@path],\%dflabel,$lastDFLabel);
-    push(@goals,$node);
   }
   $explore_level--;
 }
