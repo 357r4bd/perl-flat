@@ -75,16 +75,29 @@ sub sd_path {
 
 ### Event handling sub references
 my %ACYCLES = ();
-my $MAX_EXPORE_LEVEL = 1;
+my $MAX_EXPORE_LEVEL = 1;  # max depth to search for new acycles
+my $NUM_MAIN_PATHS = 10;    # number of main paths to explore
+
 if ($ARGV[1]) {
   $MAX_EXPORE_LEVEL = $ARGV[1];
 }
+
+if ($ARGV[2]) {
+  $NUM_MAIN_PATHS = $ARGV[2];
+}
+
 my $explore_level = 0;
+my $main_path_count = 0;
 
 sub explore { 
   my @acyclic_path = @_; 
   my $original = join('~>',@acyclic_path);
-  #printf("%s\n",join('~>',@acyclic_path)) if ($explore_level == MAX_EXPORE_LEVEL);
+  #printf("%s\n",join('~>',@acyclic_path)) if ($explore_level == $MAX_EXPORE_LEVEL);
+
+  if ($explore_level == 0) {
+    $main_path_count++;
+    return if ($main_path_count > $NUM_MAIN_PATHS);
+  }
 
   return if ($explore_level == $MAX_EXPORE_LEVEL);
   my $acycle = join(',',@acyclic_path);
@@ -92,7 +105,7 @@ sub explore {
   return if ($ACYCLES{$acycle} > 1);
 
   $explore_level++;
-  #printf("%s%s\n",'-'x($explore_level-1),$original);
+  printf("%s%s\n",'-'x($explore_level-1),$original);
 
   # goal nodes are everything in the parent acyclic path 
   # initialize goals
@@ -113,7 +126,7 @@ sub explore {
 &main;
 
 foreach (keys(%ACYCLES)) {
-  print "$ACYCLES{$_} .... $_";
+  #print "$ACYCLES{$_} .... $_";
 }
 
 my $c = keys(%ACYCLES);
