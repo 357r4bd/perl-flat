@@ -74,24 +74,33 @@ sub sd_path {
 }
 
 ### Event handling sub references
-use constant MAX_EXPORE_LEVEL => 1;
+my %ACYCLES = ();
+my $MAX_EXPORE_LEVEL = 1;
+if ($ARGV[1]) {
+  $MAX_EXPORE_LEVEL = $ARGV[1];
+}
 my $explore_level = 0;
 
 sub explore { 
   my @acyclic_path = @_; 
   my $original = join('~>',@acyclic_path);
-  print join('~>',@acyclic_path) if ($explore_level == MAX_EXPORE_LEVEL);
+  #printf("%s\n",join('~>',@acyclic_path)) if ($explore_level == MAX_EXPORE_LEVEL);
 
-  return if ($explore_level == MAX_EXPORE_LEVEL);
+  return if ($explore_level == $MAX_EXPORE_LEVEL);
+  my $acycle = join(',',@acyclic_path);
+  $ACYCLES{$acycle}++; # keep total count
+  return if ($ACYCLES{$acycle} > 1);
+
   $explore_level++;
-  print "main($explore_level): $original";
+  #printf("%s%s\n",'-'x($explore_level-1),$original);
 
-  # goal nodes are everything leading up the start node
+  # goal nodes are everything in the parent acyclic path 
   # initialize goals
-  my @goals = (); #shift @acyclic_path;
+
+  my @goals = @acyclic_path;# (); #shift @acyclic_path;
   foreach my $node (@acyclic_path) {
-    push(@goals,$node);
-    printf("start: %s; potential goals: %s\n",$node,join(',',@goals));                          
+    #push(@goals,$node);
+    #printf("start: %s; potential goals: %s\n",$node,join(',',@goals));                          
     my @path           = (); # scoped, stores path
     my %dflabel        = (); # scoped lookup table for dflable
     my $lastDFLabel    =  0;
@@ -100,12 +109,14 @@ sub explore {
   $explore_level--;
 }
 
-
-sub path_to_string {
-
-}
-
 ### Call main
 &main;
+
+foreach (keys(%ACYCLES)) {
+  print "$ACYCLES{$_} .... $_";
+}
+
+my $c = keys(%ACYCLES);
+printf("%s acycles\n",$c);
 
 __END__
