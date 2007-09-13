@@ -44,6 +44,12 @@ sub main {
   sd_path($dfa->get_starting(),[$dfa->get_accepting()],[@path],\%dflabel,$lastDFLabel); 
 }
 
+#
+# Bread and butta function - finds all acyclic paths from given start node to 
+# a set of goal nodes; all tracking is self contained and no global vars are
+# used
+#
+
 sub sd_path {
   my $startNode    = shift;
   my $goals_ref    = shift;
@@ -54,18 +60,22 @@ sub sd_path {
   push (@{$path_ref},$startNode);
   # only continue if startNode has not been visited yet
   if (!exists($dflabel_ref->{$startNode})) {
-    $dflabel_ref->{$startNode} = ++$lastDFLabel;
+    $dflabel_ref->{$startNode} = ++$lastDFLabel; # increment, then assign
     foreach my $adjacent (keys(%{$nodes{$startNode}})) {
       if (!exists($dflabel_ref->{$adjacent})) {   # initial tree edge
 	@{$path_ref} = sd_path($adjacent,[@{$goals_ref}],[@{$path_ref}],$dflabel_ref,$lastDFLabel);
 	# assumes some base path found
         if ($dfa->array_is_subset([$adjacent],[@{$goals_ref}])) {   
            # handle discovery of an acyclic path to a goal 
-	   explore(@{$path_ref},$adjacent);
-	} else { 
-           # back edge detection...  
-        }
-      } 
+	   explore_acycle(@{$path_ref},$adjacent);
+	}
+      } else { 
+        # back edge that lands on an accepting node  
+        if ($dfa->array_is_subset([$adjacent],[@{$goals_ref}])) {   
+           # handle discovery of an acyclic path to a goal 
+	   explore_acycle(@{$path_ref},$adjacent);
+	}      
+      }
     } # remove startNode entry to facilitate acyclic path determination
     delete($dflabel_ref->{$startNode});
   }
@@ -76,7 +86,7 @@ sub sd_path {
 ### Event handling sub references
 my %ACYCLES = ();
 my $MAX_EXPORE_LEVEL = 1;  # max depth to search for new acycles
-my $NUM_MAIN_PATHS = 10;    # number of main paths to explore
+my $NUM_MAIN_PATHS   = 10;    # number of main paths to explore
 
 if ($ARGV[1]) {
   $MAX_EXPORE_LEVEL = $ARGV[1];
@@ -89,19 +99,21 @@ if ($ARGV[2]) {
 my $explore_level = 0;
 my $main_path_count = 0;
 
-sub explore { 
+sub explore_acycle { 
   my @acyclic_path = @_; 
   my $original = join('~>',@acyclic_path);
   #printf("%s\n",join('~>',@acyclic_path)) if ($explore_level == $MAX_EXPORE_LEVEL);
 
+  # return if the limit of main paths hasbeen reached
   if ($explore_level == 0) {
     $main_path_count++;
     return if ($main_path_count > $NUM_MAIN_PATHS);
   }
-
+  # return when explore limit has been reached
   return if ($explore_level == $MAX_EXPORE_LEVEL);
   my $acycle = join(',',@acyclic_path);
   $ACYCLES{$acycle}++; # keep total count
+  # return if acycle has already been explored
   return if ($ACYCLES{$acycle} > 1);
 
   $explore_level++;
@@ -131,5 +143,3 @@ foreach (keys(%ACYCLES)) {
 
 my $c = keys(%ACYCLES);
 printf("%s acycles\n",$c);
-
-__END__
