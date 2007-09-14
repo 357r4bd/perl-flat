@@ -1,11 +1,12 @@
 #!/usr/bin/env perl -l
 
 #
-# To be implemented in the main module code soon 
-# (minus not the store/retrieve stuff); that is here for the convenience of testing
-#
-# This code employs a recursive DFS based determination of all acyclic paths, which is 
-# pretty darn efficient
+# TODO
+#  1. from paths, get valid strings
+#  2. implement int FLAT and provide interface via fash
+#  3. investigate acycles more closely, look at how
+#  4. subsequent goal nodes may be manipulated to influence 
+#     results
 #
 
 use strict;
@@ -16,33 +17,21 @@ use FLAT::NFA;
 use FLAT::PFA;
 use FLAT::Regex::WithExtraOps;
 
-my $dfa;
-
-### Caching Mechanism
-### Cache PRE's to disk so that they don't have to be recompiled
-use Storable;
-mkdir "dat" if (! -e "dat");
-if (!-e "dat/$ARGV[0].dat") {
-  $dfa = FLAT::Regex::WithExtraOps->new($ARGV[0])->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
-  store $dfa, "dat/$ARGV[0].dat";
-} else {
-  print STDERR "dat/$ARGV[0].dat found.."; 
-  $dfa = retrieve "dat/$ARGV[0].dat";
-}
-### End Cache Mechanism
-
+my $dfa = FLAT::Regex::WithExtraOps->new($ARGV[0])->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks();
 my %nodes = $dfa->as_node_list();
 
+### Event handling sub references
+my %ACYCLES = ();
+my $NUM_MAIN_PATHS     = 5;    # number of main paths to explore
+my $MAX_EXPORE_LEVEL   = 1;     # max depth to search for new acycles
+my $CONSIDER_BACKEDGES = 0;
 
+$NUM_MAIN_PATHS   = $ARGV[1] if ($ARGV[1]);
+$MAX_EXPORE_LEVEL = $ARGV[2] if ($ARGV[2]);
+$CONSIDER_BACKEDGES++        if ($ARGV[3]);
 
-### Subroutines
-sub main {
-  my @path           = (); # scoped, stores path
-  my %dflabel        = (); # scoped lookup table for dflable
-  my $lastDFLabel    =  0;
-  # accepts start node and set of possible goals
-  sd_path($dfa->get_starting(),[$dfa->get_accepting()],[@path],\%dflabel,$lastDFLabel); 
-}
+my $explore_level = 0;
+my $main_path_count = 0;
 
 #
 # Bread and butta function - finds all acyclic paths from given start node to 
@@ -51,11 +40,11 @@ sub main {
 #
 
 sub sd_path {
-  my $startNode    = shift;
-  my $goals_ref    = shift;
-  my $path_ref     = shift;
-  my $dflabel_ref  = shift;
-  my $lastDFLabel  = shift;
+  my $startNode     = shift;
+  my $goals_ref     = shift;
+  my $path_ref      = shift;
+  my $dflabel_ref   = shift;
+  my $lastDFLabel   = shift;
   # add start node to path
   push (@{$path_ref},$startNode);
   # only continue if startNode has not been visited yet
@@ -69,7 +58,7 @@ sub sd_path {
            # handle discovery of an acyclic path to a goal 
 	   explore_acycle(@{$path_ref},$adjacent);
 	}
-      } else { 
+      } elsif (0 < $CONSIDER_BACKEDGES) { 
         # back edge that lands on an accepting node  
         if ($dfa->array_is_subset([$adjacent],[@{$goals_ref}])) {   
            # handle discovery of an acyclic path to a goal 
@@ -83,34 +72,24 @@ sub sd_path {
   return @{$path_ref};
 }
 
-### Event handling sub references
-my %ACYCLES = ();
-my $MAX_EXPORE_LEVEL = 1;  # max depth to search for new acycles
-my $NUM_MAIN_PATHS   = 10;    # number of main paths to explore
+# exploration driver uses a sub reference to the function
+# that gets the acyclic path...since there are many that it
+# could use: get sd_path, shortest path, longest path, etc
 
-if ($ARGV[1]) {
-  $MAX_EXPORE_LEVEL = $ARGV[1];
-}
-
-if ($ARGV[2]) {
-  $NUM_MAIN_PATHS = $ARGV[2];
-}
-
-my $explore_level = 0;
-my $main_path_count = 0;
+my $GET_ACYCLE = \&sd_path;
 
 sub explore_acycle { 
   my @acyclic_path = @_; 
   my $original = join('~>',@acyclic_path);
-  #printf("%s\n",join('~>',@acyclic_path)) if ($explore_level == $MAX_EXPORE_LEVEL);
 
-  # return if the limit of main paths hasbeen reached
+### controls
+  # return if the limit of main paths has been reached
   if ($explore_level == 0) {
     $main_path_count++;
     return if ($main_path_count > $NUM_MAIN_PATHS);
   }
   # return when explore limit has been reached
-  return if ($explore_level == $MAX_EXPORE_LEVEL);
+  return if ($explore_level > $MAX_EXPORE_LEVEL);
   my $acycle = join(',',@acyclic_path);
   $ACYCLES{$acycle}++; # keep total count
   # return if acycle has already been explored
@@ -122,6 +101,11 @@ sub explore_acycle {
   # goal nodes are everything in the parent acyclic path 
   # initialize goals
 
+  ##goal management options:
+  # 1. all nodes in A all the time
+  # 2. only self and df(node) =< df(self)  # back edges
+  # 3. only self and df(node) > df(self)   # fwd edges
+
   my @goals = @acyclic_path;# (); #shift @acyclic_path;
   foreach my $node (@acyclic_path) {
     #push(@goals,$node);
@@ -129,17 +113,28 @@ sub explore_acycle {
     my @path           = (); # scoped, stores path
     my %dflabel        = (); # scoped lookup table for dflable
     my $lastDFLabel    =  0;
-    sd_path($node,[@goals],[@path],\%dflabel,$lastDFLabel);
+    $GET_ACYCLE->($node,[@goals],[@path],\%dflabel,$lastDFLabel);
+    shift @goals; # pop of latest, thus forcing only forward edges
   }
+
   $explore_level--;
+}
+
+### Subroutines
+sub main {
+  my @path           = (); # scoped, stores path
+  my %dflabel        = (); # scoped lookup table for dflable
+  my $lastDFLabel    =  0;
+  # accepts start node and set of possible goals
+  $GET_ACYCLE->($dfa->get_starting(),[$dfa->get_accepting()],[@path],\%dflabel,$lastDFLabel); 
+  foreach (keys(%ACYCLES)) {
+    #print "$ACYCLES{$_} .... $_";
+  }
+  my $c = keys(%ACYCLES);
+  printf("%s acycles\n",$c);
 }
 
 ### Call main
 &main;
 
-foreach (keys(%ACYCLES)) {
-  #print "$ACYCLES{$_} .... $_";
-}
 
-my $c = keys(%ACYCLES);
-printf("%s acycles\n",$c);
