@@ -51,36 +51,39 @@ sub as_strings {
       $dfa = retrieve "$PRE.dat";
     }
 
-    %dflabel       = (); # "global" lookup table for dflable
-    %backtracked   = (); # "global" lookup table for backtracked edges
-    %low           = (); # "global" lookup table for low
-    $lastDFLabel   = 0;
-    @string        = ();
-    %nodes         = $dfa->as_node_list();
+    my %dflabel       = (); # lookup table for dflable
+    my %backtracked   = (); # lookup table for backtracked edges
+    my $lastDFLabel   = 0;
+    my @string        = ();
+    my %nodes         = $dfa->as_node_list();
     # output format is the actual PRE followed by all found strings
     print $RE->as_string(),"\n";
-    acyclic($dfa->get_starting());
+    acyclic($dfa->get_starting(),\%dflabel,$lastDFLabel,\%nodes,\@string);
 }
 sub acyclic {
   my $startNode = shift;
+  my $dflabel_ref = shift;
+  my $lastDFLabel = shift;
+  my $nodes = shift;
+  my $string = shift;
   # tree edge detection
-  if (!exists($dflabel{$startNode})) {
-    $dflabel{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
-    foreach my $adjacent (keys(%{$nodes{$startNode}})) {
-      if (!exists($dflabel{$adjacent})) {      # initial tree edge
-        foreach my $symbol (@{$nodes{$startNode}{$adjacent}}) {
-	  push(@string,$symbol);
-          acyclic($adjacent);
+  if (!exists($dflabel_ref->{$startNode})) {
+    $dflabel_ref->{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
+    foreach my $adjacent (keys(%{$nodes->{$startNode}})) {
+      if (!exists($dflabel_ref->{$adjacent})) {      # initial tree edge
+        foreach my $symbol (@{$nodes->{$startNode}{$adjacent}}) {
+	  push(@{$string},$symbol);
+          acyclic($adjacent,\%{$dflabel_ref},$lastDFLabel,\%{$nodes},\@{$string});
 	  if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
-            printf("%s\n",join('',@string));
+            printf("%s\n",join('',@{$string}));
 	  }
-	  pop(@string);
+	  pop(@{$string});
         }
       }
     } 
   }
   # remove startNode entry to facilitate acyclic path determination
-  delete($dflabel{$startNode});
-  $lastDFLabel--;
+  delete($dflabel_ref->{$startNode});
+  #$lastDFLabel--;
   return;     
 };

@@ -51,46 +51,52 @@ sub as_strings {
       $dfa = retrieve "$PRE.dat";
     }
 
-    %dflabel       = (); # "global" lookup table for dflable
-    %backtracked   = (); # "global" lookup table for backtracked edges
-    %low           = (); # "global" lookup table for low
-    $lastDFLabel   = 0;
-    @string        = ();
-    %nodes         = $dfa->as_node_list();
+    my %dflabel       = (); # lookup table for dflable
+    my %backtracked   = (); # lookup table for backtracked edges
+    my %low           = (); # lookup table for low
+    my $lastDFLabel   = 0;
+    my @string        = ();
+    my %nodes         = $dfa->as_node_list();
+
     # output format is the actual PRE followed by all found strings
     print $RE->as_string(),"\n";
-    dft($dfa->get_starting());
+    dft($dfa->get_starting(),\%dflabel,$lastDFLabel,\%nodes,\@string,\%low);
 }
 sub dft {
   my $startNode = shift;
+  my $dflabel_ref = shift;
+  my $lastDFLabel = shift;
+  my $nodes = shift;
+  my $string = shift;
+  my $low_ref = shift;
   # tree edge detection
-  if (!exists($dflabel{$startNode})) {
-    $dflabel{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
-    foreach my $adjacent (keys(%{$nodes{$startNode}})) {
-      if (!exists($dflabel{$adjacent})) {      # initial tree edge
-        foreach my $symbol (@{$nodes{$startNode}{$adjacent}}) {
-	  push(@string,$symbol);
-          dft($adjacent);
+  if (!exists($dflabel_ref->{$startNode})) {
+    $dflabel_ref->{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
+    foreach my $adjacent (keys(%{$nodes->{$startNode}})) {
+      if (!exists($dflabel_ref->{$adjacent})) {      # initial tree edge
+        foreach my $symbol (@{$nodes->{$startNode}{$adjacent}}) {
+	  push(@{$string},$symbol);
+          dft($adjacent,\%{$dflabel_ref},$lastDFLabel,\%{$nodes},\@{$string},\%low_ref);
 	  if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
-            printf("%s\n",join('',@string));
+            printf("%s\n",join('',@{$string}));
 	  } 
-	  pop(@string);
+	  pop(@{$string});
         }
       } else { # detects back edge, but string still valid if we've landed on an accepting state
         if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) {
-          foreach my $symbol (@{$nodes{$startNode}{$adjacent}}) {
-	    push(@string,$symbol);
+          foreach my $symbol (@{$nodes->{$startNode}{$adjacent}}) {
+	    push(@{$string},$symbol);
 	    if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
-              printf("%s\n",join('',@string));
+              printf("%s\n",join('',@{$string}));
   	    } 
-  	    pop(@string);
+  	    pop(@{$string});
           }
         }
       }
     } 
   }
   # remove startNode entry to facilitate acyclic path determination
-  delete($dflabel{$startNode});
-  $lastDFLabel--;
+  delete($dflabel_ref->{$startNode});
+  #$lastDFLabel--;
   return;     
 };

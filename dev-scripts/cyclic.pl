@@ -106,15 +106,14 @@ sub explore_acycle {
   # 2. only self and df(node) =< df(self)  # back edges
   # 3. only self and df(node) > df(self)   # fwd edges
 
-  my @goals = @acyclic_path;# (); #shift @acyclic_path;
+  my @goals = (); #shift @acyclic_path;
   foreach my $node (@acyclic_path) {
-    #push(@goals,$node);
+    push(@goals,$node);
     #printf("start: %s; potential goals: %s\n",$node,join(',',@goals));                          
     my @path           = (); # scoped, stores path
     my %dflabel        = (); # scoped lookup table for dflable
     my $lastDFLabel    =  0;
     $GET_ACYCLE->($node,[@goals],[@path],\%dflabel,$lastDFLabel);
-    shift @goals; # pop of latest, thus forcing only forward edges
   }
 
   $explore_level--;

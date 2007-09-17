@@ -27,8 +27,8 @@ print STDERR <<END;
   so if the file exists, it will not go through the transformation again;
   In a basic sense, this is an example of compressing data - compare the 
   size of the serialized object with a text file containing all strings stored
-  in the DFA.  The "compression" is even more extreme if you compare the size 
-  of the output'd text with the size of the actual regular expression.
+  in the DFA.  The compression is even more extreme if you compare the size 
+  of the output-d text with the size of the actual regular expression.
 END
 
 my $dfa;
