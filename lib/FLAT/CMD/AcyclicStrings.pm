@@ -60,6 +60,9 @@ sub as_strings {
     print $RE->as_string(),"\n";
     acyclic($dfa->get_starting(),\%dflabel,$lastDFLabel,\%nodes,\@string);
 }
+
+# no longer uses global variables
+
 sub acyclic {
   my $startNode = shift;
   my $dflabel_ref = shift;

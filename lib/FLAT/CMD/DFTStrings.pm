@@ -62,6 +62,9 @@ sub as_strings {
     print $RE->as_string(),"\n";
     dft($dfa->get_starting(),\%dflabel,$lastDFLabel,\%nodes,\@string,\%low);
 }
+
+# no longer uses global variables
+
 sub dft {
   my $startNode = shift;
   my $dflabel_ref = shift;
