@@ -3,9 +3,11 @@
 package FLAT::CMD::DFTStrings;
 use base 'FLAT::CMD';
 use FLAT;
-use FLAT::Regex;
+use FLAT::Regex::WithExtraOps;
+use FLAT::PFA;
 use FLAT::NFA;
 use FLAT::DFA;
+use Storable;
 use Carp;
 
 # Support for perl one liners - like what CPAN.pm uses #<- should move all to another file
@@ -36,11 +38,6 @@ sub as_strings {
         last;
       }
     } 
-    use FLAT::Regex::WithExtraOps;
-    use FLAT::PFA;
-    use FLAT::NFA;
-    use FLAT::DFA;
-    use Storable;
     # caches results, loads them in if detexted
     my $RE = FLAT::Regex::WithExtraOps->new($PRE);
     if (!-e "$PRE.dat") {
@@ -51,55 +48,7 @@ sub as_strings {
       $dfa = retrieve "$PRE.dat";
     }
 
-    my %dflabel       = (); # lookup table for dflable
-    my %backtracked   = (); # lookup table for backtracked edges
-    my %low           = (); # lookup table for low
-    my $lastDFLabel   = 0;
-    my @string        = ();
-    my %nodes         = $dfa->as_node_list();
-
-    # output format is the actual PRE followed by all found strings
-    print $RE->as_string(),"\n";
-    dft($dfa->get_starting(),\%dflabel,$lastDFLabel,\%nodes,\@string,\%low);
+    $dfa->as_dft_strings();
 }
 
-# no longer uses global variables
-
-sub dft {
-  my $startNode = shift;
-  my $dflabel_ref = shift;
-  my $lastDFLabel = shift;
-  my $nodes = shift;
-  my $string = shift;
-  my $low_ref = shift;
-  # tree edge detection
-  if (!exists($dflabel_ref->{$startNode})) {
-    $dflabel_ref->{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
-    foreach my $adjacent (keys(%{$nodes->{$startNode}})) {
-      if (!exists($dflabel_ref->{$adjacent})) {      # initial tree edge
-        foreach my $symbol (@{$nodes->{$startNode}{$adjacent}}) {
-	  push(@{$string},$symbol);
-          dft($adjacent,\%{$dflabel_ref},$lastDFLabel,\%{$nodes},\@{$string},\%low_ref);
-	  if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
-            printf("%s\n",join('',@{$string}));
-	  } 
-	  pop(@{$string});
-        }
-      } else { # detects back edge, but string still valid if we've landed on an accepting state
-        if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) {
-          foreach my $symbol (@{$nodes->{$startNode}{$adjacent}}) {
-	    push(@{$string},$symbol);
-	    if ($dfa->array_is_subset([$adjacent],[$dfa->get_accepting()])) { #< proof of concept
-              printf("%s\n",join('',@{$string}));
-  	    } 
-  	    pop(@{$string});
-          }
-        }
-      }
-    } 
-  }
-  # remove startNode entry to facilitate acyclic path determination
-  delete($dflabel_ref->{$startNode});
-  #$lastDFLabel--;
-  return;     
-};
+1;
