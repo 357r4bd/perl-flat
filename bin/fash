@@ -99,7 +99,12 @@ case "${1}" in
   nfa2undgv)      perl -MFLAT::CMD -e "nfa2undgv(\"${2}\")" ;;
   pfa2undgv)      perl -MFLAT::CMD -e "pfa2undgv(\"${2}\")" ;;
   somestrings)    perl -MFLAT::CMD::AcyclicStrings -e "as_strings(\"${2}\")" ;;
-  morestrings)    perl -MFLAT::CMD::DFTStrings     -e "as_strings(\"${2}\")" ;;
+  morestrings)        
+    if [ -n "${3}" ]; then
+      perl -MFLAT::CMD::DFTStrings     -e "as_strings(\"${2}\",\"${3}\")"
+    else 
+      perl -MFLAT::CMD::DFTStrings     -e "as_strings(\"${2}\")"
+    fi ;;
   dfa2digraph)    perl -MFLAT::CMD -e "dfa2digraph(\"${2}\")" ;;         
   nfa2digraph)    perl -MFLAT::CMD -e "nfa2digraph(\"${2}\")" ;;           
   pfa2digraph)    perl -MFLAT::CMD -e "pfa2digraph(\"${2}\")" ;;            

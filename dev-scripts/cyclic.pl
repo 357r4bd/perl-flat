@@ -58,7 +58,8 @@ sub sd_path {
            # handle discovery of an acyclic path to a goal 
 	   explore_acycle(@{$path_ref},$adjacent);
 	}
-      } elsif (0 < $CONSIDER_BACKEDGES) { 
+      } 
+      elsif (0 < $CONSIDER_BACKEDGES) { 
         # back edge that lands on an accepting node  
         if ($dfa->array_is_subset([$adjacent],[@{$goals_ref}])) {   
            # handle discovery of an acyclic path to a goal 
@@ -94,6 +95,7 @@ sub explore_acycle {
   $ACYCLES{$acycle}++; # keep total count
   # return if acycle has already been explored
   return if ($ACYCLES{$acycle} > 1);
+### controls
 
   $explore_level++;
   printf("%s%s\n",'-'x($explore_level-1),$original);
@@ -115,7 +117,6 @@ sub explore_acycle {
     my $lastDFLabel    =  0;
     $GET_ACYCLE->($node,[@goals],[@path],\%dflabel,$lastDFLabel);
   }
-
   $explore_level--;
 }
 

@@ -192,6 +192,7 @@ sub as_node_list {
     my $self = shift;
     my %node = ();
     for my $s1 ($self->get_states) {
+      $node{$s1} = {}; # initialize
       for my $s2 ($self->get_states) {
          my $t = $self->get_transition($s1, $s2);
          if (defined $t) {
@@ -211,7 +212,6 @@ sub as_acyclic_strings {
     my @string        = ();
     my %nodes         = $self->as_node_list();
     # output format is the actual PRE followed by all found strings
-    #print $RE->as_string(),"\n";
     $self->acyclic($self->get_starting(),\%dflabel,$lastDFLabel,\%nodes,\@string);
 }
 
@@ -245,56 +245,49 @@ sub acyclic {
 };
 
 sub as_dft_strings {
-    my $self = shift;
-    my %dflabel       = (); # lookup table for dflable
-    my %backtracked   = (); # lookup table for backtracked edges
-    my $lastDFLabel   = 0;
-    my @string        = ();
-    my %nodes         = $self->as_node_list();
-    my %low           = ();
-    # output format is the actual PRE followed by all found strings
-    #print $RE->as_string(),"\n";
-    $self->acyclic($self->get_starting(),\%dflabel,$lastDFLabel,\%nodes,\@string,\%low);
+  my $self = shift;
+  my $depth = 1;
+  $depth = shift if (1 < $_[0]);
+  my %dflabel        = (); # scoped lookup table for dflable
+  my %nodes          = $self->as_node_list();
+  foreach (keys(%nodes)) {
+    $dflabel{$_} = []; # initialize container (array) for multiple dflables for each node
+  }
+  my $lastDFLabel    =  0;
+  my @string         = ();
+  $self->dft($self->get_starting(),[$self->get_accepting()],\%dflabel,$lastDFLabel,\%nodes,\@string,$depth); 
 }
 
 sub dft {
   my $self = shift;
-  my $startNode = shift;
-  my $dflabel_ref = shift;
-  my $lastDFLabel = shift;
-  my $nodes = shift;
-  my $string = shift;
-  my $low_ref = shift;
-  # tree edge detection
-  if (!exists($dflabel_ref->{$startNode})) {
-    $dflabel_ref->{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
+  my $startNode    = shift;
+  my $goals_ref    = shift;
+  my $dflabel_ref  = shift;
+  my $lastDFLabel  = shift;
+  my $nodes        = shift;
+  my $string       = shift;
+  my $DEPTH        = shift;
+  # add start node to path
+  my $c1 = @{$dflabel_ref->{$startNode}}; # get number of elements
+  if ($DEPTH >= $c1) {  
+    push(@{$dflabel_ref->{$startNode}},++$lastDFLabel);
     foreach my $adjacent (keys(%{$nodes->{$startNode}})) {
-      if (!exists($dflabel_ref->{$adjacent})) {      # initial tree edge
+      my $c2 = @{$dflabel_ref->{$adjacent}};
+      if ($DEPTH > $c2) {   # "initial" tree edge
         foreach my $symbol (@{$nodes->{$startNode}{$adjacent}}) {
 	  push(@{$string},$symbol);
-          $self->dft($adjacent,\%{$dflabel_ref},$lastDFLabel,\%{$nodes},\@{$string},\%{$low_ref});
-	  if ($self->array_is_subset([$adjacent],[$self->get_accepting()])) { #< proof of concept
-            printf("%s\n",join('',@{$string}));
-	  } 
-	  pop(@{$string});
-        }
-      } else { # detects back edge, but string still valid if we've landed on an accepting state
-        if ($self->array_is_subset([$adjacent],[$self->get_accepting()])) {
-          foreach my $symbol (@{$nodes->{$startNode}{$adjacent}}) {
-	    push(@{$string},$symbol);
-	    if ($self->array_is_subset([$adjacent],[$self->get_accepting()])) { #< proof of concept
-              printf("%s\n",join('',@{$string}));
-  	    } 
-  	    pop(@{$string});
-          }
-        }
+	  $self->dft($adjacent,[@{$goals_ref}],$dflabel_ref,$lastDFLabel,$nodes,[@{$string}],$DEPTH);
+	  # assumes some base path found
+          if ($self->array_is_subset([$adjacent],[@{$goals_ref}])) { 
+            printf("%s\n",join('',@{$string}));    
+  	  } 
+          pop(@{$string}); 
+        } 
       }
-    } 
-  }
-  # remove startNode entry to facilitate acyclic path determination
-  delete($dflabel_ref->{$startNode});
-  #$lastDFLabel--;
-  return;     
+    } # remove startNode entry to facilitate acyclic path determination
+    pop(@{$dflabel_ref->{$startNode}});
+    $lastDFLabel--;
+  }    
 };
 
 1;
