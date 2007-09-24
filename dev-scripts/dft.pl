@@ -33,6 +33,9 @@ if (!-e "dat/$ARGV[0].dat") {
 
 my %nodes = $dfa->as_node_list();
 
+use Data::Dumper;
+print Dumper(\%nodes); 
+
 # define path finding subs
 
 my @path_list           = ();
