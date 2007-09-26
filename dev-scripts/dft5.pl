@@ -1,56 +1,44 @@
 #!/usr/bin/env perl
+
 use strict;
 use warnings;
 use Data::Dumper;
+use lib qw(../lib);
+use FLAT::DFA;
+use FLAT::NFA;
+use FLAT::PFA;
+use FLAT::Regex::WithExtraOps;
 
-{ # closure privatizes $c;
-  my %dflabel = ();
-  my $lastDFLabel = 0;
-  sub get_sub {
-    my $start = shift;
-    if (!exists($dflabel{$start})) {
-      $dflabel{$start} = ++$lastDFLabel;
-      my %nodelist = %{get_nodelist()};
-      my @ret = ();
-      foreach my $adjacent (keys(%{$nodelist{$start}})) {
-        my $s = sub { print '-'x$lastDFLabel,"$start -> $adjacent\n"; return get_sub($adjacent); }; 
-        push(@ret,$s);
-      }
-      return @ret;
+my $dfa = FLAT::Regex::WithExtraOps->new($ARGV[0])->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
+
+sub get_sub {
+  my $start = shift;
+  my $nodelist_ref = shift;
+  my $dflabel_ref  = shift;
+  my $lastDFLabel  = shift;
+  my @ret = ();
+  foreach my $adjacent (keys(%{$nodelist_ref->{$start}})) {
+    if (!exists($dflabel_ref->{$adjacent})) {
+      $dflabel_ref->{$adjacent} = ++$lastDFLabel;
+      push(@ret,sub { print '-'x$dflabel_ref->{$adjacent},"$start .. $adjacent\n"; 
+                      return get_sub($adjacent,$nodelist_ref,+{%{$dflabel_ref}},$lastDFLabel);}); 
     }
-    return sub { };
   }
- 
- sub startover {
-   %dflabel = ();
-   $lastDFLabel = 0;
- }
+  return @ret;
+}
+  
+my %dflabel = ();
+my $lastDFLabel = 0;
+my %nodelist = $dfa->as_node_list();
+
+# initialize
+my @stack = ();
+# preload @stack
+push(@stack,get_sub($dfa->get_starting(),\%nodelist,\%dflabel,$lastDFLabel));
+
+while (@stack) {
+  my $s = pop @stack;
+  push(@stack,$s->()); 
 }
 
-
-foreach my $node (keys(%{get_nodelist()})) {
-  my @stack = ();
-  push(@stack,get_sub($node));
-
-  while (@stack) {
-    my $s = pop @stack;
-    push(@stack,$s->()); 
-  }
-
-  startover();
-}
-
-sub get_nodelist {
-  return {'6'  => { '9'  => [ 'e' ], '2' => [ 'c' ] },
-          '11' => { '8'  => [ 'c' ] },
-          '3'  => { '6'  => [ 'd' ], '0' => [ 'c' ] },
-          '7'  => { '10' => [ 'f' ], '9' => [ 'b' ] },
-          '9'  => { '11' => [ 'f' ], '5' => [ 'c' ] },
-          '2'  => { '4'  => [ 'a' ], '5' => [ 'e' ] },
-          '8'  => { '10' => [ 'a' ] },
-          '4'  => { '6'  => [ 'b' ], '7' => [ 'e' ] },
-          '1'  => { '4'  => [ 'd' ], '3' => [ 'b' ] },
-          '0'  => { '1'  => [ 'a' ], '2' => [ 'd' ] },
-          '10' => { '11' => [ 'b' ] },
-          '5'  => { '8'  => [ 'f' ], '7' => [ 'a' ] } };
-}
+1;
