@@ -26,7 +26,8 @@ sub get_sub {
       foreach my $symbol (@{$nodelist_ref->{$start}{$adjacent}}) { 
         push(@{$string_ref},$symbol);
       	my $string_clone = dclone($string_ref);
-        push(@ret,sub { return get_sub($adjacent,$nodelist_ref,$dflabel_ref,$string_clone,$accepting_ref,$lastDFLabel); }); 
+        my $dflabel_clone = dclone($dflabel_ref);
+        push(@ret,sub { return get_sub($adjacent,$nodelist_ref,$dflabel_clone,$string_clone,$accepting_ref,$lastDFLabel); }); 
         pop @{$string_ref};
       }
     } 
@@ -46,6 +47,16 @@ my @accepting = $dfa->get_accepting();
 my @substack = ();
 my $r = get_sub($dfa->get_starting(),\%nodelist,\%dflabel,\@string,\@accepting,$lastDFLabel);
 push(@substack,@{$r->{substack}});
+
+while (@substack) {
+  my $s = pop @substack;
+  my $r = $s->();
+  if ($r->{string}) {
+    print $r->{string},"\n";
+  }
+  push(@substack,@{$r->{substack}}); 
+  last;
+}
 
 while (@substack) {
   my $s = pop @substack;

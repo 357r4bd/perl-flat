@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+sub recurse {
+  my $max = shift;
+  my $num = shift;
+  if ($num < $max) {
+    return sub { return recurse($max,$num+1); };
+  }
+  else {
+    return sub { print "done!\n"; };
+  }
+}
+
+
+
+
+
+
+
+1;
