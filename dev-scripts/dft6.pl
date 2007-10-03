@@ -35,18 +35,19 @@ sub get_sub {
 }
  
 sub init {
-  my %dflabel = (); 
   my @string  = (); 
   my $lastDFLabel = 0; 
   my %nodelist = $dfa->as_node_list(); 
+  my %dflabel = (); 
+  foreach my $node (keys(%nodelist)) {
+    $dflabel{$node} = []; # initializes anonymous arrays for all nodes
+  }
   my @accepting = $dfa->get_accepting();
 
   # initialize
   my @substack = ();
   my $r = get_sub($dfa->get_starting(),\%nodelist,\%dflabel,\@string,\@accepting,$lastDFLabel);
   push(@substack,@{$r->{substack}});
-
-  #...need explicit init/reset funcs..
 
   return sub {
     while (1) {
