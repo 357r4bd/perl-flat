@@ -48,23 +48,22 @@ my @substack = ();
 my $r = get_sub($dfa->get_starting(),\%nodelist,\%dflabel,\@string,\@accepting,$lastDFLabel);
 push(@substack,@{$r->{substack}});
 
-while (@substack) {
-  my $s = pop @substack;
-  my $r = $s->();
-  if ($r->{string}) {
-    print $r->{string},"\n";
+sub nextstring {
+  while (1) {
+    if (!@substack) {
+      return undef;
+    }
+    my $s = pop @substack;
+    my $r = $s->();
+    push(@substack,@{$r->{substack}}); 
+    if ($r->{string}) {
+     return $r->{string};
+    }
   }
-  push(@substack,@{$r->{substack}}); 
-  last;
 }
 
-while (@substack) {
-  my $s = pop @substack;
-  my $r = $s->();
-  if ($r->{string}) {
-    print $r->{string},"\n";
-  }
-  push(@substack,@{$r->{substack}}); 
+while (my $x = nextstring()) {
+  print "$x\n";
 }
 
 1;
