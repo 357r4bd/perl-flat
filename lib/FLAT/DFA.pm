@@ -1,6 +1,7 @@
 package FLAT::DFA;
 use strict;
 use base 'FLAT::NFA';
+use Storable qw(dclone);
 use Carp;
 $|++;
 
@@ -289,6 +290,122 @@ sub dft {
     $lastDFLabel--;
   }    
 };
+
+#
+# String gen using iterators (still experimental)
+#
+
+sub get_acyclic_sub {
+  my $self = shift;
+  my ($start,$nodelist_ref,$dflabel_ref,$string_ref,$accepting_ref,$lastDFLabel) = @_;
+  my @ret = ();
+  foreach my $adjacent (keys(%{$nodelist_ref->{$start}})) {
+    $lastDFLabel++;
+    if (!exists($dflabel_ref->{$adjacent})) {
+      $dflabel_ref->{$adjacent} = $lastDFLabel;
+      foreach my $symbol (@{$nodelist_ref->{$start}{$adjacent}}) { 
+        push(@{$string_ref},$symbol);
+      	my $string_clone = dclone($string_ref);
+        my $dflabel_clone = dclone($dflabel_ref);
+        push(@ret,sub { return $self->get_acyclic_sub($adjacent,$nodelist_ref,$dflabel_clone,$string_clone,$accepting_ref,$lastDFLabel); }); 
+        pop @{$string_ref};
+      }
+    } 
+ 
+  }
+  return {substack=>[@ret],
+          lastDFLabel=>$lastDFLabel,
+          string => ($self->array_is_subset([$start],[@{$accepting_ref}]) ? join('',@{$string_ref}) : undef)};
+}
+sub init_acyclic_iterator {
+  my $self = shift;
+  my %dflabel = (); 
+  my @string  = (); 
+  my $lastDFLabel = 0; 
+  my %nodelist = $self->as_node_list(); 
+  my @accepting = $self->get_accepting();
+  # initialize
+  my @substack = ();
+  my $r = $self->get_acyclic_sub($self->get_starting(),\%nodelist,\%dflabel,\@string,\@accepting,$lastDFLabel);
+  push(@substack,@{$r->{substack}});
+  return sub {
+    while (1) {
+      if (!@substack) {
+        return undef;
+      }
+      my $s = pop @substack;
+      my $r = $s->();
+      push(@substack,@{$r->{substack}}); 
+      if ($r->{string}) {
+       return $r->{string};
+      }
+    }
+  }
+}
+
+sub new_acyclic_string_generator {
+  my $self = shift;
+  return $self->init_acyclic_iterator();
+}
+
+sub get_deepdft_sub {
+  my $self = shift;
+  my ($start,$nodelist_ref,$dflabel_ref,$string_ref,$accepting_ref,$lastDFLabel,$max) = @_;
+  my @ret = ();
+  my $c1 = @{$dflabel_ref->{$start}};
+  if ($c1 < $max) {
+    push(@{$dflabel_ref->{$start}},++$lastDFLabel);
+    foreach my $adjacent (keys(%{$nodelist_ref->{$start}})) {
+      my $c2 = @{$dflabel_ref->{$adjacent}};
+      if ($c2 < $max) {
+        foreach my $symbol (@{$nodelist_ref->{$start}{$adjacent}}) { 
+          push(@{$string_ref},$symbol);
+          my $string_clone = dclone($string_ref);
+          my $dflabel_clone = dclone($dflabel_ref);
+          push(@ret,sub { return $self->get_deepdft_sub($adjacent,$nodelist_ref,$dflabel_clone,$string_clone,$accepting_ref,$lastDFLabel,$max); }); 
+          pop @{$string_ref};
+        }
+      }
+    }
+  }
+  return {substack=>[@ret], lastDFLabel=>$lastDFLabel, string => ($self->array_is_subset([$start],[@{$accepting_ref}]) ? join('',@{$string_ref}) : undef)};
+}
+ 
+sub init_deepdft_iterator {
+  my $self = shift;
+  my $MAXLEVEL = shift;
+  my %dflabel = (); 
+  my @string  = (); 
+  my $lastDFLabel = 0; 
+  my %nodelist = $self->as_node_list(); 
+  foreach my $node (keys(%nodelist)) {
+    $dflabel{$node} = []; # initializes anonymous arrays for all nodes
+  }
+  my @accepting = $self->get_accepting();
+  # initialize
+  my @substack = ();
+  my $r = $self->get_deepdft_sub($self->get_starting(),\%nodelist,\%dflabel,\@string,\@accepting,$lastDFLabel,$MAXLEVEL);
+  push(@substack,@{$r->{substack}});
+  return sub {
+    while (1) {
+      if (!@substack) {
+        return undef;
+      }
+      my $s = pop @substack;
+      my $r = $s->();
+      push(@substack,@{$r->{substack}}); 
+      if ($r->{string}) {
+       return $r->{string};
+      }
+    }
+  }
+}
+
+sub new_deepdft_string_generator {
+  my $self = shift;
+  my $MAXLEVEL = (@_ ? shift : 1);
+  return $self->init_deepdft_iterator($MAXLEVEL);
+}
 
 1;
 

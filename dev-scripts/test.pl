@@ -1,30 +1,22 @@
-#!/usr/bin/env perl
-
+#!/usr/bin/env perl -l
 use strict;
-use warnings;
 
-my @DNA = qw/A C T G/;
-my $seq = gen_permutate(14, @DNA);
+use lib qw(../lib);
+use FLAT::DFA;
+use FLAT::NFA;
+use FLAT::PFA;
+use FLAT::Regex::WithExtraOps;
 
-while ( my $strand = $seq->() ) {
-    print "$strand\n";
-    sleep 1;
+my $dfa = FLAT::Regex::WithExtraOps->new($ARGV[0])->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
+
+my $next = $dfa->new_acyclic_string_generator;
+
+while (my $string = $next->()) {
+  print "$string";
 }
-sub gen_permutate {
-    my ($max, @list) = @_;
-    my @curr;
-    return sub {
-        if ( (join '', map { $list[ $_ ] } @curr) eq $list[ -1 ] x @curr ) {
-            @curr = (0) x (@curr + 1);
-        }
-        else {
-            my $pos = @curr;
-            while ( --$pos > -1 ) {
-                ++$curr[ $pos ], last if $curr[ $pos ] < $#list;
-                $curr[ $pos ] = 0;
-            }
-        }
-        return undef if @curr > $max;
-        return join '', map { $list[ $_ ] } @curr;
-    };
+
+my $next = $dfa->new_deepdft_string_generator(10);
+
+while (my $string = $next->()) {
+  print "$string";
 }
