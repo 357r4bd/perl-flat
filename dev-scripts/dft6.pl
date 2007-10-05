@@ -11,27 +11,28 @@ my $dfa = FLAT::Regex::WithExtraOps->new($ARGV[0])->as_pfa->as_nfa->as_dfa->as_m
 sub get_sub {
   my $start = shift;
   my $nodelist_ref = shift;
-  my $dflabel_ref  = shift;
-  my $string_ref   = shift;
+  my $dflabel_ref = shift;
+  my $string_ref = shift;
   my $accepting_ref = shift;
-  my $lastDFLabel  = shift;
+  my $lastDFLabel = shift;
   my @ret = ();
-  foreach my $adjacent (keys(%{$nodelist_ref->{$start}})) {
-    $lastDFLabel++;
-    if (!exists($dflabel_ref->{$adjacent})) {
-      $dflabel_ref->{$adjacent} = $lastDFLabel;
-      foreach my $symbol (@{$nodelist_ref->{$start}{$adjacent}}) { 
-        push(@{$string_ref},$symbol);
-      	my $string_clone = dclone($string_ref);
-        my $dflabel_clone = dclone($dflabel_ref);
-        push(@ret,sub { return get_sub($adjacent,$nodelist_ref,$dflabel_clone,$string_clone,$accepting_ref,$lastDFLabel); }); 
-        pop @{$string_ref};
+  my $c1 = @{$dflabel_ref->{$start}};
+  if ($c1 < 10) {
+    push(@{$dflabel_ref->{$start}},++$lastDFLabel);
+    foreach my $adjacent (keys(%{$nodelist_ref->{$start}})) {
+      my $c2 = @{$dflabel_ref->{$adjacent}};
+      if ($c2 < 10) {
+        foreach my $symbol (@{$nodelist_ref->{$start}{$adjacent}}) { 
+          push(@{$string_ref},$symbol);
+          my $string_clone = dclone($string_ref);
+          my $dflabel_clone = dclone($dflabel_ref);
+          push(@ret,sub { return get_sub($adjacent,$nodelist_ref,$dflabel_clone,$string_clone,$accepting_ref,$lastDFLabel); }); 
+          pop @{$string_ref};
+        }
       }
-    } 
+    }
   }
-  return {substack=>[@ret],
-          lastDFLabel=>$lastDFLabel,
-          string => ($dfa->array_is_subset([$start],[@{$accepting_ref}]) ? join('',@{$string_ref}) : undef)};
+  return {substack=>[@ret], lastDFLabel=>$lastDFLabel, string => ($dfa->array_is_subset([$start],[@{$accepting_ref}]) ? join('',@{$string_ref}) : undef)};
 }
  
 sub init {
@@ -43,12 +44,10 @@ sub init {
     $dflabel{$node} = []; # initializes anonymous arrays for all nodes
   }
   my @accepting = $dfa->get_accepting();
-
   # initialize
   my @substack = ();
   my $r = get_sub($dfa->get_starting(),\%nodelist,\%dflabel,\@string,\@accepting,$lastDFLabel);
   push(@substack,@{$r->{substack}});
-
   return sub {
     while (1) {
       if (!@substack) {
