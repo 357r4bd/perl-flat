@@ -2,6 +2,7 @@ t/01-regex.t
 t/02-fa.t
 t/03-pregex-pfa.t
 t/04-transform.t
+t/05-string-gen.t
 MANIFEST
 lib/FLAT/Regex/Op.pm
 lib/FLAT/Regex/Parser.pm

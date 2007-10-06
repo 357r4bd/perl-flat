@@ -2,17 +2,13 @@ use Test::More 'no_plan';
 
 use strict;
 
-use lib qw(../lib);
+#use lib qw(../lib);
 use FLAT;
 use FLAT::DFA;
 use FLAT::NFA;
 use FLAT::PFA;
 use FLAT::Regex::WithExtraOps;
-use Memoize;
 
-diag("This test might take a while..");
-
-diag("w&v..");
 # w&w
 my $PFA1 = FLAT::Regex::WithExtraOps->new('abc&def')->as_pfa();
 my $PFA2 = FLAT::Regex::WithExtraOps->new('a(b(c&def)+d(ef&bc))+d(ef&abc)')->as_pfa();
@@ -22,15 +18,11 @@ my $DFA2 = $PFA2->as_nfa->as_min_dfa;
 is( ($DFA1->equals($DFA2)), 1 );
 
 # w&w*
-diag("");
-diag("w&v*..");
 # w&v*
 $PFA1 = FLAT::Regex::WithExtraOps->new('abc&(def)*')->as_pfa();
-$PFA2 = FLAT::Regex::WithExtraOps->new('(def)*(
-                                              a(bc&(def)*)+
+$PFA2 = FLAT::Regex::WithExtraOps->new('(def)*( a(bc&(def)*)+
                                               d((efd)*ef&(abc))+
-                                              d((efd)*&(abc))ef
-                                             )')->as_pfa();
+                                              d((efd)*&(abc))ef)')->as_pfa();
 
 __END__ #<-- uncomment for more intensive and time consuming tests
 
@@ -53,7 +45,6 @@ $DFA1 = $PFA1->as_nfa->as_min_dfa;
 $DFA2 = $PFA2->as_nfa->as_min_dfa;
  is( ($DFA1->equals($DFA2)), 1);
 
-diag("w*x&v*y..");
 # w*x&v*y
 $PFA1 = FLAT::Regex::WithExtraOps->new('(abc)*dx&(efg)*hy')->as_pfa(); 
 $PFA2 = FLAT::Regex::WithExtraOps->new('(abc+efg)*( dx&(efg)*hy+
