@@ -14,7 +14,6 @@ sub random_pre {
   my $STAR    = 30;
   my $OPEN    = 5;
   my $CLOSE   = 0;
-  my $n       = 1;
   my $AND     = 10;    
   my $getRandomChar = sub {
     my $ch = '';
