@@ -105,7 +105,6 @@ sub is_finite {
     $_[0]->op->is_finite;
 }
 
-
 1;
 
 __END__

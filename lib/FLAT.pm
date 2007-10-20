@@ -45,7 +45,6 @@ sub is_subset_of {
     $_[0]->difference($_[1])->is_empty
 }
 
-
 BEGIN {
     for my $method (qw[ as_nfa as_regex union intersect complement concat
                         kleene reverse is_empty is_finite ])
