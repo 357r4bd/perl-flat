@@ -1,3 +1,3 @@
 #!/bin/sh
 perl Makefile.PL && \
-  make && make install
+  make && make test && make install

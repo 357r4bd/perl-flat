@@ -24,8 +24,6 @@ $PFA2 = FLAT::Regex::WithExtraOps->new('(def)*( a(bc&(def)*)+
                                               d((efd)*ef&(abc))+
                                               d((efd)*&(abc))ef)')->as_pfa();
 
-__END__ #<-- uncomment for more intensive and time consuming tests
-
 $DFA1 = $PFA1->as_nfa->as_min_dfa;
 $DFA2 = $PFA2->as_nfa->as_min_dfa;
 
@@ -33,13 +31,14 @@ is( ($DFA1->equals($DFA2)), 1);
 
 # w*&v*
 # throws some weird warning from FA.pm when mimimizing, but passes still
-#$PFA1 = FLAT::Regex::WithExtraOps->new('(abc)*&(def)*')->as_pfa();
-#$PFA2 = FLAT::Regex::WithExtraOps->new('((abc+def)*(
-#                                                    a((bca)*bc&(def)*)+
-#                                                    a((bca)*&(def)*)bc+
-#                                                    d((efd)*ef&(abc)*)+
-#                                                    d((efd)*&(abc)*)ef
-#                                                    )*)*')->as_pfa();
+$PFA1 = FLAT::Regex::WithExtraOps->new('(abc)*&(def)*')->as_pfa();
+$PFA2 = FLAT::Regex::WithExtraOps->new('((abc+def)*( a((bca)*bc&(def)*)+
+                                                    a((bca)*&(def)*)bc+
+                                                    d((efd)*ef&(abc)*)+
+                                                    d((efd)*&(abc)*)ef
+                                                    )*)*')->as_pfa();
+
+__END__ #<-- uncomment for more intensive and time consuming tests
 
 $DFA1 = $PFA1->as_nfa->as_min_dfa;
 $DFA2 = $PFA2->as_nfa->as_min_dfa;

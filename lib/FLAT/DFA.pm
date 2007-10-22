@@ -90,7 +90,7 @@ sub trim_sinks {
     my @ret = $self->successors($state,[$self->alphabet]);
     if (@ret) {
       if ($ret[0] == $state) {
-        $result->delete_states($state);    
+        $result->delete_states($state) if ($result->is_state($state));    
       }
     }
   }
