@@ -10,10 +10,11 @@ use FLAT::PFA;
 use FLAT::Regex::WithExtraOps;
 use FLAT::Regex::Util;
 
-for my $i (2..4) { 
-  for my $j (1..250000) {
+for (my $i=2;$i<6;$i++) { 
+  for (1..25000) {
     my $PRE = FLAT::Regex::Util::random_pre($i);
     print "PRE: ",$PRE->as_string,"\n";
+    ok ( $PRE->as_pfa );
     ok ( $PRE->as_pfa->as_nfa );
     ok ( $PRE->as_pfa->as_nfa->as_dfa );
     ok ( $PRE->as_pfa->as_nfa->as_dfa->as_min_dfa );
