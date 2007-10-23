@@ -10,7 +10,7 @@ use FLAT::PFA;
 use FLAT::Regex::WithExtraOps;
 use FLAT::Regex::Util;
 
-for my $i (1..4) { 
+for my $i (2..4) { 
   for my $j (1..250000) {
     my $PRE = FLAT::Regex::Util::random_pre($i);
     print "PRE: ",$PRE->as_string,"\n";
