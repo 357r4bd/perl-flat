@@ -10,9 +10,8 @@ use FLAT::PFA;
 use FLAT::Regex::WithExtraOps;
 use FLAT::Regex::Util;
 
-for (1..10000) {
+for (1..100) {
   my $PRE = FLAT::Regex::Util::random_pre(8);
-  print $PRE->as_string,"\n";
   my $DFA = $PRE->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
   my $next = $DFA->new_acyclic_string_generator();
   while (my $string = $next->()) {
