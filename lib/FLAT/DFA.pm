@@ -423,19 +423,136 @@ transition for each available label/character.
 
 =head1 USAGE
 
-=head1 AUTHORS & ACKNOWLEDGEMENTS
- 
-FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
-Estrade E<lt>estradb at gmail dot comE<gt>.
+In addition to implementing the interface specified in L<FLAT> and L<NFA>, FLAT::DFA
+objects provide the following DFA-specific methods:
 
-The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS
-thesis at the University of Southern Mississippi.
+=over
+
+=item $dfa-E<gt>unset_starting
+
+Because a DFA, by definition, must have only ONE starting state, this allows one to unset
+the current start state so that a new one may be set.
+
+=item $dfa-E<gt>trim_sinks
+
+This method returns a FLAT::DFA (though in theory an NFA) that is lacking a transition for 
+all symbols from all states.  This method eliminates all transitions from all states that lead
+to a sink state; it also eliminates the sink state.
+
+This has no affect on testing if a string is valid using C<FLAT::DFA::is_valid_string>, 
+discussed below.
+
+=item $dfa-E<gt>as_min_dfa
+
+This method minimizes the number of states and transitions in the given DFA. The modifies
+the current/calling DFA object.
+
+=item $dfa-E<gt>is_valid_string($string)
+
+This method tests if the given string is accepted by the DFA.
+
+=item $dfa-E<gt>as_node_list
+
+This method returns a node list in the form of a hash. This node list may be viewed as a 
+pure digraph, and is lacking in state names and transition symbols.
+
+=item $dfa-E<gt>as_acyclic_strings
+
+The method is B<deprecated>, and it is suggested that one not use it.  It returns all 
+valid strings accepted by the DFA by exploring all acyclic paths that go from the start
+state and end in an accepting state.  The issue with this method is that it finds and
+returns all strings at once.  The iterator described below is much more ideal for actual
+use in an application.
+
+=item $dfa-E<gt>as_dft_strings($depth)
+
+The method is B<deprecated>, and it is suggested that one not use it.  It returns all 
+valid strings accepted by the DFA using a depth first traversal.  A valid string is formed
+when the traversal detects an accepting state, whether it is a terminal node or a node reached
+via a back edge.  The issue with this method is that it finds and returns all strings at once.  
+The iterator described below is much more ideal for actual use in an application.
+
+The argument, C<$depth> specifies how many times the traversal may actually pass through
+a previously visited node.  It is therefore possible to safely explore DFAs that accept
+infinite languages.
+
+=item $dfa-E<gt>new_acyclic_string_generator
+
+This allows one to initialize an iterator that returns a valid string on each successive
+call of the sub-ref that is returned. It returns all valid strings accepted by the DFA by 
+exploring all acyclic paths that go from the start state and end in an accepting state.
+
+Example:
+
+ #!/usr/bin/env perl
+ use strict; 
+ use warnings;
+ use FLAT::DFA;
+ use FLAT::NFA;
+ use FLAT::PFA;
+ use FLAT::Regex::WithExtraOps; 
+
+ my $PRE = "abc&(def)*";
+ my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks; 
+ my $next = $dfa->new_acyclic_string_generator; 
+ print "PRE: $PRE\n";
+ print "Acyclic:\n";
+ while (my $string = $next->()) {
+   print "  $string\n";
+ }
+
+=item $dfa-E<gt>new_deepdft_string_generator($depth)
+
+This allows one to initialize an iterator that returns a valid string on each successive
+call of the sub-ref that is returned. It returns all valid strings accepted by the DFA using a 
+depth first traversal.  A valid string is formed when the traversal detects an accepting state, 
+whether it is a terminal node or a node reached via a back edge.
+
+The argument, C<$depth> specifies how many times the traversal may actually pass through
+a previously visited node.  It is therefore possible to safely explore DFAs that accept
+infinite languages.
+
+ #!/usr/bin/env perl
+ use strict; 
+ use warnings;
+ use FLAT::DFA;
+ use FLAT::NFA;
+ use FLAT::PFA;
+ use FLAT::Regex::WithExtraOps; 
+
+ my $PRE = "abc&(def)*";
+ my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks; 
+ my $next = $dfa->new_deepdft_string_generator();
+ print "Deep DFT (default):\n";
+ for (1..10) {
+  while (my $string = $next->()) {
+    print "  $string\n";
+    last;
+   }
+ }
+
+ $next = $dfa->new_deepdft_string_generator(5);
+ print "Deep DFT (5):\n";
+ for (1..10) {
+   while (my $string = $next->()) {
+     print "  $string\n";
+     last;
+   }
+ }
+
+=back
+
+=head1 AUTHORS & ACKNOWLEDGEMENTS
+
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and 
+Brett Estrade E<lt>estradb at gmail dot comE<gt>.
+
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an 
+MS thesis at the University of Southern Mississippi.
+
+Please visit the Wiki at http://www.0x743.com/flat
 
 =head1 LICENSE
 
 This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
-     
-=head1 MORE INFO
-
-Please visit the Wiki at http://www.0x743.com/flat

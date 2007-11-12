@@ -83,18 +83,16 @@ in conflict with another symbol in string form.  TYPE is used to distinguish.  C
 this, nor its current sub classes, FLAT::Symbol::Regular and FLAT::Symbol::Special, are used.
 
 =head1 AUTHORS & ACKNOWLEDGEMENTS
- 
-FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
-Estrade E<lt>estradb at gmail dot comE<gt>.
 
-The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS
-thesis at the University of Southern Mississippi.
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and 
+Brett Estrade E<lt>estradb at gmail dot comE<gt>.
+
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an 
+MS thesis at the University of Southern Mississippi.
+
+Please visit the Wiki at http://www.0x743.com/flat
 
 =head1 LICENSE
 
 This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
-     
-=head1 MORE INFO
-
-Please visit the Wiki at http://www.0x743.com/flat

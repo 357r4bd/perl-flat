@@ -48,20 +48,19 @@ from one state to others.  This class is meant for internal use.
 
 =head1 USAGE
 
-=cut
-=head1 AUTHORS & ACKNOWLEDGEMENTS
- 
-FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
-Estrade E<lt>estradb at gmail dot comE<gt>.
+used internally;
 
-The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS
-thesis at the University of Southern Mississippi.
+=head1 AUTHORS & ACKNOWLEDGEMENTS
+
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and 
+Brett Estrade E<lt>estradb at gmail dot comE<gt>.
+
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an 
+MS thesis at the University of Southern Mississippi.
+
+Please visit the Wiki at http://www.0x743.com/flat
 
 =head1 LICENSE
 
 This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
-     
-=head1 MORE INFO
-
-Please visit the Wiki at http://www.0x743.com/flat
