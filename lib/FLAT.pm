@@ -5,7 +5,24 @@ use FLAT::DFA;
 use Carp;
 
 use vars '$VERSION';
-$VERSION = 0.01;
+$VERSION = 0.9;
+
+=head1 NAME
+
+FLAT - Formal Language & Automata Toolkit
+
+=head1 SYNOPSIS
+
+FLAT.pm is the base class of all regular language objects. For more
+information, see other POD pages.
+
+=head1 USAGE
+
+All regular language objects in FLAT implement the following methods.
+Specific regular language representations (regex, NFA, DFA) may implement
+additional methods that are outlined in the repsective POD pages.
+
+=cut
 
 ## let subclasses implement a minimal set of closure properties.
 ## they can override these with more efficient versions if they like.
@@ -60,21 +77,6 @@ BEGIN {
 1;
 
 __END__
-
-=head1 NAME
-
-FLAT - Formal Language & Automata Toolkit
-
-=head1 SYNOPSIS
-
-FLAT.pm is the base class of all regular language objects. For more
-information, see other POD pages.
-
-=head1 USAGE
-
-All regular language objects in FLAT implement the following methods.
-Specific regular language representations (regex, NFA, DFA) may implement
-additional methods that are outlined in the repsective POD pages.
 
 =head2 Conversions Among Representations
 
@@ -179,13 +181,17 @@ represented by $lang.
 
 =head1 AUTHORS & ACKNOWLEDGEMENTS
 
-FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
-Estrade E<lt>estradb at mailcan dot comE<gt>.
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett 
+Estrade E<lt>estradb at gmail dot comE<gt>.
 
-Initial version by Brett Estrade was work towards an MS thesis at the
-University of Southern Mississippi.
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS 
+thesis at the University of Southern Mississippi.
 
 =head1 LICENSE
 
 This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
+
+=head1 MORE INFO
+
+Please visit the Wiki at http://www.0x743.com/flat
