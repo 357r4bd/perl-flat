@@ -5,6 +5,25 @@ use FLAT::NFA;
 use FLAT::DFA;
 use Carp;
 
+=head1 NAME
+
+CMD - Commandline interface for the Formal Language & Automata Toolkit
+
+=head1 SYNOPSIS
+
+CMD.pm is provides an interface to the C<fash> commandline utility that offers
+certain features implemented in FLAT.  Consequently, this interface is also
+available using the C<perl -MFLAT::CMD -e func> paradigm, but C<fash> makes
+things a lot more convenient.
+
+=head1 USAGE
+
+All regular language objects in FLAT implement the following methods.
+Specific regular language representations (regex, NFA, DFA) may implement
+additional methods that are outlined in the repsective POD pages.
+
+=cut
+
 # Support for perl one liners - like what CPAN.pm uses #<- should move all to another file
 use base 'Exporter'; #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
@@ -496,3 +515,21 @@ sub random_re {
 1;
 
 __END__
+
+=head1 AUTHORS & ACKNOWLEDGEMENTS
+
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
+Estrade E<lt>estradb at gmail dot comE<gt>.
+
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS
+thesis at the University of Southern Mississippi.
+
+=head1 LICENSE
+
+This module is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=head1 MORE INFO
+
+Please visit the Wiki at http://www.0x743.com/flat
+

@@ -4,10 +4,21 @@ use base 'FLAT::DFA';
 use Carp;
 $|++;
 
-# an XFA is an FA (implemented as a DFA here) that allows for RE's 
-# as transition symbols; this causes us to track a "type" of state
-# that determines if a transition to itself indicates a closure or 
-# not
+=head1 NAME
+
+FLAT::XFA - X Finite Automata
+
+=head1 SYNOPSIS
+
+An XFA is a FA (implemented as a DFA here) that allows for RE's as transition symbols; this
+will be used, for among other things, the implementation of the conversion, C<DFA->RE>, using
+state elimination.
+
+=head1 USAGE
+
+none; not yet implemented.
+
+=cut
 
 sub new {
     my $pkg = shift;
@@ -28,7 +39,25 @@ sub eliminate_states {
 
 sub as_re {
     my $self = shift;
-  
 }
 
 1;
+
+__END__
+
+=head1 AUTHORS & ACKNOWLEDGEMENTS
+ 
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
+Estrade E<lt>estradb at gmail dot comE<gt>.
+
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS
+thesis at the University of Southern Mississippi.
+
+=head1 LICENSE
+
+This module is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+     
+=head1 MORE INFO
+
+Please visit the Wiki at http://www.0x743.com/flat

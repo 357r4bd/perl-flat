@@ -74,10 +74,27 @@ __END__
 
 =head1 NAME
 
-FLAT::Symbol - Base class for transition symbol
+FLAT::Symbol - Base class for transition symbol.
 
 =head1 SYNOPSIS
 
 A super class that is intended to provide a simple mechanism for storing a symbol that might be 
 in conflict with another symbol in string form.  TYPE is used to distinguish.  Currenly this neither 
-this, nor its current sub classes, Regular and Special, are used.
+this, nor its current sub classes, FLAT::Symbol::Regular and FLAT::Symbol::Special, are used.
+
+=head1 AUTHORS & ACKNOWLEDGEMENTS
+ 
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
+Estrade E<lt>estradb at gmail dot comE<gt>.
+
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS
+thesis at the University of Southern Mississippi.
+
+=head1 LICENSE
+
+This module is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+     
+=head1 MORE INFO
+
+Please visit the Wiki at http://www.0x743.com/flat

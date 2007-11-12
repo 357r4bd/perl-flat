@@ -6,6 +6,23 @@ use Carp;
 
 use FLAT::Transition;
 
+=head1 NAME
+
+FLAT::FA - Base class for regular finite automata
+
+=head1 SYNOPSIS
+
+A FLAT::FA object is a collection of states and transitions. Each state
+may be labeled as starting or accepting. Each transition between states
+is labeled with a transition object.
+
+=head1 USAGE
+
+FLAT::FA is a superclass that is not intended to be used directly. However,
+it does provide the following methods:
+
+=cut
+
 sub new {
     my $pkg = shift;
     bless {
@@ -375,64 +392,10 @@ sub _swallow {
     return map { $_ + $N1 } $other->get_states;
 }
 
-############
-
-sub as_summary {
-    my $self = shift;
-    my $out = ''; 
-    $out .= sprintf ("States         : ");
-    my @start;
-    my @final;
-    foreach ($self->get_states()) {
-      $out .= sprintf "'$_' ";
-      if ($self->is_starting($_)) {
-        push(@start,$_);
-      }
-      if ($self->is_accepting($_)) {
-        push(@final,$_);
-      }
-    }
-    $out .= sprintf ("\nStart State    : '%s'\n",join('',@start));
-    $out .= sprintf ("Final State(s) : ");
-    foreach (@final) {
-      $out .= sprintf "'$_' ";
-    }
-    $out .= sprintf ("\nAlphabet       : ");
-    foreach ($self->alphabet()) {
-      $out .= sprintf "'$_' ";
-    }
-    $out .= sprintf ("\nTransitions    :\n");
-    my @trans;
-     for my $s1 ($self->get_states) {
-     for my $s2 ($self->get_states) {
-         my $t = $self->get_transition($s1, $s2);
-         if (defined $t) {
-             push @trans, sprintf qq[%s -> %s on "%s"\n],
-                 $s1, $s2, $t->as_string;
-         }
-     }}
-    $out .= join('',@trans);
-    return $out;        
-}
-
 1;
 
 __END__
 
-=head1 NAME
-
-FLAT::FA - Base class for regular finite automata
-
-=head1 SYNOPSIS
-
-A FLAT::FA object is a collection of states and transitions. Each state
-may be labeled as starting or accepting. Each transition between states
-is labeled with a transition object.
-
-=head1 USAGE
-
-FLAT::FA is a superclass that is not intended to be used directly. However,
-it does provide the following methods:
 
 =head2 Manipulation & Inspection Of States
 
@@ -574,3 +537,20 @@ suitable for debugging purposes.
 Returns an identical copy of $fa.
 
 =back
+
+=head1 AUTHORS & ACKNOWLEDGEMENTS
+ 
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
+Estrade E<lt>estradb at gmail dot comE<gt>.
+
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS
+thesis at the University of Southern Mississippi.
+
+=head1 LICENSE
+
+This module is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+     
+=head1 MORE INFO
+
+Please visit the Wiki at http://www.0x743.com/flat

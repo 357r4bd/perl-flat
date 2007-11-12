@@ -4,6 +4,17 @@ use base 'FLAT::FA';
 
 use FLAT::Transition;
 
+=head1 NAME
+
+FLAT::NFA - Nondeterministic finite automata
+
+=head1 SYNOPSIS
+
+A FLAT::NFA object is a finite automata whose transitions are labeled
+either with characters or the empty string (epsilon).
+
+=cut
+
 sub new {
     my $pkg = shift;
     my $self = $pkg->SUPER::new(@_);
@@ -205,6 +216,47 @@ sub _extend_alphabet {
     $self->add_transition($trash, $trash, $self->alphabet);
 }
 
+######## transformations
+
+# subset construction
+sub as_dfa {
+    my $self = shift;
+    
+    my $result = FLAT::DFA->new;
+    my %subset;
+    
+    my %final = map { $_ => 1 } $self->get_accepting;
+    my @start = sort { $a <=> $b }
+                $self->epsilon_closure( $self->get_starting );
+
+    my $start = $subset{ _SET_ID(@start) } = $result->add_states(1);
+    $result->set_starting($start);
+    $result->set_accepting( $subset{$start} )
+        if grep $_, @final{@start};
+
+    my @queue = (\@start);
+    while (@queue) {
+        my @states = @{ shift @queue };
+        my $S      = $subset{ _SET_ID(@states) };
+        
+        for my $symb ($self->alphabet) {
+            my @to = $self->epsilon_closure(
+                            $self->successors(\@states, $symb) );
+
+            if ( not exists $subset{_SET_ID(@to)} ) {
+                push @queue, \@to;
+                my $T = $subset{_SET_ID(@to)} = $result->add_states(1);
+                $result->set_accepting($T)
+                    if grep $_, @final{@to};
+            }
+            
+            $result->add_transition($S, $subset{ _SET_ID(@to) }, $symb);
+        }
+    }
+
+    $result;
+}
+
 ############ Formatted output
 
 # Format that Dr. Sukhamay KUNDU likes to use in his assignments :)
@@ -341,59 +393,47 @@ sub as_undirected_graphviz {
 
 sub _SET_ID { join "\0", sort { $a <=> $b } @_; }
 
-######## transformations
-
-# subset construction
-sub as_dfa {
+sub as_summary {
     my $self = shift;
-    
-    my $result = FLAT::DFA->new;
-    my %subset;
-    
-    my %final = map { $_ => 1 } $self->get_accepting;
-    my @start = sort { $a <=> $b }
-                $self->epsilon_closure( $self->get_starting );
-
-    my $start = $subset{ _SET_ID(@start) } = $result->add_states(1);
-    $result->set_starting($start);
-    $result->set_accepting( $subset{$start} )
-        if grep $_, @final{@start};
-
-    my @queue = (\@start);
-    while (@queue) {
-        my @states = @{ shift @queue };
-        my $S      = $subset{ _SET_ID(@states) };
-        
-        for my $symb ($self->alphabet) {
-            my @to = $self->epsilon_closure(
-                            $self->successors(\@states, $symb) );
-
-            if ( not exists $subset{_SET_ID(@to)} ) {
-                push @queue, \@to;
-                my $T = $subset{_SET_ID(@to)} = $result->add_states(1);
-                $result->set_accepting($T)
-                    if grep $_, @final{@to};
-            }
-            
-            $result->add_transition($S, $subset{ _SET_ID(@to) }, $symb);
-        }
+    my $out = ''; 
+    $out .= sprintf ("States         : ");
+    my @start;
+    my @final;
+    foreach ($self->get_states()) {
+      $out .= sprintf "'$_' ";
+      if ($self->is_starting($_)) {
+        push(@start,$_);
+      }
+      if ($self->is_accepting($_)) {
+        push(@final,$_);
+      }
     }
-
-    $result;
+    $out .= sprintf ("\nStart State    : '%s'\n",join('',@start));
+    $out .= sprintf ("Final State(s) : ");
+    foreach (@final) {
+      $out .= sprintf "'$_' ";
+    }
+    $out .= sprintf ("\nAlphabet       : ");
+    foreach ($self->alphabet()) {
+      $out .= sprintf "'$_' ";
+    }
+    $out .= sprintf ("\nTransitions    :\n");
+    my @trans;
+     for my $s1 ($self->get_states) {
+     for my $s2 ($self->get_states) {
+         my $t = $self->get_transition($s1, $s2);
+         if (defined $t) {
+             push @trans, sprintf qq[%s -> %s on "%s"\n],
+                 $s1, $s2, $t->as_string;
+         }
+     }}
+    $out .= join('',@trans);
+    return $out;        
 }
 
 1;
 
 __END__
-
-=head1 NAME
-
-FLAT::NFA - Nondeterministic finite automata
-
-=head1 SYNOPSIS
-
-A FLAT::NFA object is a finite automata whose transitions are labeled
-either with characters or the empty string (epsilon).
 
 =head1 USAGE
 
@@ -414,4 +454,58 @@ I-th arrayref contains the states which are reachable from the starting
 state(s) of $nfa after reading I characters of $string. Correctly accounts
 for epsilon transitions.
 
+=item $nfa-E<gt>as_undirected
+
+Outputs FA in a format that may be easily read into an external program as
+a description of an undirected graph.
+
+=item $nfa-E<gt>as_digraph
+
+Outputs FA in a format that may be easily read into an external program as
+a description of an directed graph.
+
+=item $nfa-E<gt>as_gdl
+
+Outputs FA in Graph Description Language (GDL), including directed transitions 
+with symbols and state names labeled.
+
+=item $nfa-E<gt>as_graphviz
+
+Outputs FA in Graphviz format, including directed transitions with symbols and
+and state names labeled.  This output may be directly piped into any of the
+Graphviz layout programs, and in turn one may output an image using a single
+commandline instruction. C<fash> uses this function to implement its "nfa2gv"
+command:
+
+ fash nfa2gv "a*b" | dot -Tpng > nfa.png
+
+=item $nfa-E<gt>as_undirected_graphviz
+
+Outputs FA in Graphviz format, with out the directed transitions or labels.
+The output is suitable for any of the Graphvize layout programs, as discussed
+above.
+
+=item $nfa-E<gt>as_summary
+
+Outputs a summary of the FA, including its states, symbols, and transition matrix.
+It is useful for manually validating what the FA looks like.
+
 =back
+
+=head1 AUTHORS & ACKNOWLEDGEMENTS
+ 
+
+FLAT is written by Mike Rosulek E<lt>mike at mikero dot comE<gt> and Brett
+Estrade E<lt>estradb at gmail dot comE<gt>.
+
+The initial version (FLAT::Legacy) by Brett Estrade was work towards an MS
+thesis at the University of Southern Mississippi.
+
+=head1 LICENSE
+
+This module is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+     
+=head1 MORE INFO
+
+Please visit the Wiki at http://www.0x743.com/flat
