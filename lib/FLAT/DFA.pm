@@ -423,8 +423,8 @@ transition for each available label/character.
 
 =head1 USAGE
 
-In addition to implementing the interface specified in L<FLAT> and L<NFA>, FLAT::DFA
-objects provide the following DFA-specific methods:
+In addition to implementing the interface specified in L<FLAT> and L<FLAT::NFA>, 
+FLAT::DFA objects provide the following DFA-specific methods:
 
 =over
 
