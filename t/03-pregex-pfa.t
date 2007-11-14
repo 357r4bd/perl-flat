@@ -2,7 +2,7 @@ use Test::More 'no_plan';
 
 use strict;
 
-#use lib qw(../lib);
+use lib qw(../lib);
 use FLAT;
 use FLAT::DFA;
 use FLAT::NFA;
@@ -19,33 +19,28 @@ ok( $PFA1 = FLAT::Regex::WithExtraOps->new('abc&def')->as_pfa() );
 ok( $PFA2 = FLAT::Regex::WithExtraOps->new('a(b(c&def)+d(ef&bc))+d(ef&abc)')->as_pfa() );
 ok( $DFA1 = $PFA1->as_nfa->as_min_dfa );
 ok( $DFA2 = $PFA2->as_nfa->as_min_dfa );
-
 is( ($DFA1->equals($DFA2)), 1 );
 
 # w&v*
 ok( $PFA1 = FLAT::Regex::WithExtraOps->new('abc&(def)*')->as_pfa() );
 ok( $PFA2 = FLAT::Regex::WithExtraOps->new('(def)*(a(bc&(def)*)+d((efd)*ef&(abc))+d((efd)*&(abc))ef)')->as_pfa() );
-
 ok( $DFA1 = $PFA1->as_nfa->as_min_dfa );
 ok( $DFA2 = $PFA2->as_nfa->as_min_dfa );
-
 is( ($DFA1->equals($DFA2)), 1);
+
 
 # w*&v*
 ok( $PFA1 = FLAT::Regex::WithExtraOps->new('(abc)*&(def)*')->as_pfa() );
 ok( $PFA2 = FLAT::Regex::WithExtraOps->new('((abc+def)*( a((bca)*bc&(def)*)+ a((bca)*&(def)*)bc+ d((efd)*ef&(abc)*)+ d((efd)*&(abc)*)ef)*)*')->as_pfa() );
-
-
 ok( $DFA1 = $PFA1->as_nfa->as_min_dfa );
 ok( $DFA2 = $PFA2->as_nfa->as_min_dfa );
 is( ($DFA1->equals($DFA2)), 1);
-
 
 # w*x&v*y
 ok( $PFA1 = FLAT::Regex::WithExtraOps->new('(abc)*dx&(efg)*hy')->as_pfa() ); 
 ok( $PFA2 = FLAT::Regex::WithExtraOps->new('(abc+efg)*( dx&(efg)*hy+ hy&(abc)*dx+ a(((bca)*bcdx)&((efg)*hy))+ a(((bca)*)&((efg)*hy))bcdx+ e(((fge)*fghy)&((abc)*dx))+ e(((fge)*)&((abc)*dx))fghy)')->as_pfa() );
 
-#....
+#...
 
 ok( $DFA1 = $PFA1->as_nfa->as_min_dfa );
 ok( $DFA2 = $PFA2->as_nfa->as_min_dfa );

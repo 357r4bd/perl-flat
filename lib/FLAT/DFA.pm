@@ -1,4 +1,6 @@
 package FLAT::DFA;
+
+use warnings;
 use strict;
 use base 'FLAT::NFA';
 use Storable qw(dclone);

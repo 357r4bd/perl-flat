@@ -1,5 +1,6 @@
 package FLAT::FA;
 
+use warnings;
 use strict;
 use base 'FLAT';
 use Carp;

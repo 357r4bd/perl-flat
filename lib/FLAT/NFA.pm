@@ -1,4 +1,6 @@
 package FLAT::NFA;
+
+use warnings;
 use strict;
 use base 'FLAT::FA';
 
