@@ -100,6 +100,7 @@ sub trim_sinks {
 }
 
 sub as_min_dfa {
+
     my $self     = shift()->clone;
     my $N        = $self->num_states;
     my @alphabet = $self->alphabet;
@@ -133,7 +134,6 @@ sub as_min_dfa {
         
         last if !$changed;
     }
-    
     my $result = (ref $self)->new;
     my %newstate;
     my @classes;

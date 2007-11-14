@@ -228,12 +228,12 @@ sub as_dfa {
     my %subset;
     
     my %final = map { $_ => 1 } $self->get_accepting;
-    my @start = sort { $a <=> $b }
-                $self->epsilon_closure( $self->get_starting );
+    my @start = sort { $a <=> $b } $self->epsilon_closure( $self->get_starting );
 
     my $start = $subset{ _SET_ID(@start) } = $result->add_states(1);
     $result->set_starting($start);
-    $result->set_accepting( $subset{$start} )
+    
+    $result->set_accepting( $start )
         if grep $_, @final{@start};
 
     my @queue = (\@start);
@@ -393,7 +393,7 @@ sub as_undirected_graphviz {
         join("", @trans);
 }
 
-sub _SET_ID { join "\0", sort { $a <=> $b } @_; }
+sub _SET_ID { return join "\0", sort { $a <=> $b } @_; }
 
 sub as_summary {
     my $self = shift;
