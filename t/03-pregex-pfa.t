@@ -30,7 +30,6 @@ $DFA2 = $PFA2->as_nfa->as_min_dfa;
 is( ($DFA1->equals($DFA2)), 1);
 
 # w*&v*
-# throws some weird warning from FA.pm when mimimizing, but passes still
 $PFA1 = FLAT::Regex::WithExtraOps->new('(abc)*&(def)*')->as_pfa();
 $PFA2 = FLAT::Regex::WithExtraOps->new('((abc+def)*( a((bca)*bc&(def)*)+
                                                     a((bca)*&(def)*)bc+
