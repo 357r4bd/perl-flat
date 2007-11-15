@@ -2,7 +2,6 @@ use Test::More 'no_plan';
 
 use strict;
 
-use lib qw(../lib);
 use FLAT;
 
 is (1,1);
