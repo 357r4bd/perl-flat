@@ -1,6 +1,5 @@
 package FLAT::DFA;
 
-use warnings;
 use strict;
 use base 'FLAT::NFA';
 use Storable qw(dclone);
@@ -488,7 +487,6 @@ Example:
 
  #!/usr/bin/env perl
  use strict; 
- use warnings;
  use FLAT::DFA;
  use FLAT::NFA;
  use FLAT::PFA;
@@ -516,7 +514,6 @@ infinite languages.
 
  #!/usr/bin/env perl
  use strict; 
- use warnings;
  use FLAT::DFA;
  use FLAT::NFA;
  use FLAT::PFA;
