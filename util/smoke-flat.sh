@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd tinderbox
+cd ../tinderbox
 
 for tinder in `ls -1`; do
   OK=0
