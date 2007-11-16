@@ -42,6 +42,9 @@ ok( $DFA1 = $PFA1->as_nfa->as_min_dfa );
 ok( $DFA2 = $PFA2->as_nfa->as_min_dfa );
 is( ($DFA1->equals($DFA2)), 1);
 
+__END__
+# these work, just take a long time
+
 # w*&v*
 ok( $PFA1 = FLAT::Regex::WithExtraOps->new('(abc)*&(def)*')->as_pfa() );
 ok( $PFA2 = FLAT::Regex::WithExtraOps->new('((abc+def)*( a((bca)*bc&(def)*)+ a((bca)*&(def)*)bc+ d((efd)*ef&(abc)*)+ d((efd)*&(abc)*)ef)*)*')->as_pfa() );
