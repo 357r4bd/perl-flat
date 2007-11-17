@@ -74,6 +74,11 @@ sub as_string {
     return $prec > $self->precedence ? "($result)" : $result;
 }
 
+sub as_perl_regex {
+    my $self = shift;
+    croak "Not implemented for shuffled regexes";
+}
+
 sub from_parse {
     my ($pkg, @item) = @_;
     $pkg->new( @{ $item[1] } );
