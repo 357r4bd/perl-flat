@@ -1,3 +1,2 @@
-1. fix errors revealed in 'make test'
-2. move fash to use Util.pm for random_pre (implement random_re)
-3. start cleaning up code - figure out if my set functions are redundant
+1. XFA
+2. xDFA->RE
