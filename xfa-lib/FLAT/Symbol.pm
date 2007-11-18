@@ -1,3 +1,5 @@
+# parent class meant to define interfaces to be implemented
+
 package FLAT::Symbol::SimpleString
 
 use strict;
