@@ -29,6 +29,8 @@ ok( $DFA1 = $PFA1->as_xfa->as_min_dfa );
 ok( $PFA1 = FLAT::Regex::WithExtraOps->new('a*&b*&c*')->as_pfa() );
 ok( $DFA1 = $PFA1->as_xfa->as_min_dfa );
 
+__END__
+
 # w&w
 ok( $PFA1 = FLAT::Regex::WithExtraOps->new('abc&def')->as_pfa() );
 ok( $PFA2 = FLAT::Regex::WithExtraOps->new('a(b(c&def)+d(ef&bc))+d(ef&abc)')->as_pfa() );

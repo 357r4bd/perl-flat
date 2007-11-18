@@ -1,4 +1,4 @@
-package FLAT::Transition;
+package FLAT::Transition::Simple;
 use strict;
 use Carp;
 
