@@ -2,6 +2,8 @@
 # Conceptual Experiment - not currently implemented anywhere...
 #
 
+# What about overloading ??
+
 package FLAT::Symbol
 
 use strict;
@@ -27,11 +29,31 @@ sub set_type {
   $_[0]->{TYPE} = $_[1];
 }
 
+sub eq {
+  croak("needs to be implemented");
+}
+
+sub gt {
+  croak("needs to be implemented");
+}
+
+sub lt {
+  croak("needs to be implemented");
+}
+
+sub ge {
+  croak("needs to be implemented");
+}
+
+sub le {
+  croak("needs to be implemented");
+}
+
 1;
 
 ##################
 
-package FLAT::Symbol::Regular;
+package FLAT::Symbol::Char;
 use base 'FLAT::Symbol';
 
 sub new {

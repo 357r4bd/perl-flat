@@ -2,7 +2,7 @@ use Test::More 'no_plan';
 
 use strict;
 
-use lib qw(../xfa-lib);
+use lib qw(../);
 use FLAT;
 use FLAT::DFA;
 use FLAT::XFA;
