@@ -1,50 +1,38 @@
-# parent class meant to define interfaces to be implemented
-
-package FLAT::Symbol::SimpleString
+package FLAT::Symbol;
 
 use strict;
 use Carp;
 
 sub new {
-  my ($pkg, $string, $type) = @_;
+  my ($pkg, $label) = @_;
   bless {
-    STRING => $string,
-    TYPE => $type, 
+    LABEL => $label,
+    COUNT => 1,
   }, $pkg;
 }
 
+sub _increment_count {
+  my $self = shift;
+  my $add = $_[0] ? shift : 1;
+  $self->{COUNT} += $add;
+  return $self->{COUNT};
+}
+
+sub _decrement_count {
+  my $self = shift;
+  my $sub = $_[0] ? shift : 1;
+  $self->{COUNT} -= $sub;
+  croak "Count less than 0!\n" if (0 > $self->{COUNT});
+  return $self->{COUNT};
+}
+
+sub get_count {
+  my $self = shift;
+  return $self->{COUNT};
+}
+
 sub as_string {
-  return $_[0]->{STRING};
+  return $_[0]->{LABEL};
 }
-
-sub get_type }
-  return $_[0]->{TYPE};
-}
-
-sub set_type {
-  $_[0]->{TYPE} = $_[1];
-}
-
-sub eq {
-  croak("needs to be implemented");
-}
-
-sub gt {
-  croak("needs to be implemented");
-}
-
-sub lt {
-  croak("needs to be implemented");
-}
-
-sub ge {
-  croak("needs to be implemented");
-}
-
-sub le {
-  croak("needs to be implemented");
-}
-
-1;
 
 1; 

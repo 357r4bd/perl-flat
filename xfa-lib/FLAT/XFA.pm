@@ -4,6 +4,7 @@ use strict;
 use base 'FLAT::FA';
 
 use FLAT::Transition::Simple;
+use FLAT::Symbol::String;
 
 =head1 NAME
 
@@ -21,9 +22,6 @@ sub new {
     my $self = $pkg->SUPER::new(@_);
     $self->{TRANS_CLASS} = "FLAT::Transition::Simple";
     $self->{ALPHA_CLASS} = "FLAT::Symbol::String";
-
-    # will hold concurrent table of blessed symbols
-    $self->{ALPHA_BLESSED} = {};
     return $self;
 }
 
