@@ -9,7 +9,7 @@ sub new {
   my ($pkg, $label) = @_;
   bless { 
     COUNT  => 1,
-    OBJECT => FLAT::Regex->new($label),
+    OBJECT => $label !~ m/^\s*$/g ? FLAT::Regex->new($label) : FLAT::Regex->new('[epsilon]'),
     LABEL  => $label,
   }, $pkg;
 }

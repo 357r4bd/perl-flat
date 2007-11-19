@@ -4,7 +4,7 @@ use strict;
 use base 'FLAT::FA';
 
 use FLAT::Transition::Simple;
-use FLAT::Symbol::String;
+use FLAT::Symbol::Regex;
 
 =head1 NAME
 
@@ -21,7 +21,7 @@ sub new {
     my $pkg = shift;
     my $self = $pkg->SUPER::new(@_);
     $self->{TRANS_CLASS} = "FLAT::Transition::Simple";
-    $self->{ALPHA_CLASS} = "FLAT::Symbol::String";
+    $self->{ALPHA_CLASS} = "FLAT::Symbol::Regex";
     return $self;
 }
 
