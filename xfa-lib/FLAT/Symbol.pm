@@ -6,8 +6,9 @@ use Carp;
 sub new {
   my ($pkg, $label) = @_;
   bless {
-    LABEL => $label,
-    COUNT => 1,
+    LABEL  => $label,          #serialized representation
+    OBJECT => $label,          #as object
+    COUNT  => 1,
   }, $pkg;
 }
 
