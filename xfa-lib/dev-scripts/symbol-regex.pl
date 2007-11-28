@@ -3,10 +3,13 @@
 use strict;
 
 use lib '..';
+use FLAT::XFA;
+use FLAT::PFA;
+use FLAT::DFA;
 use FLAT::Symbol::Regex;
 use Data::Dumper;
 
-my @regexes=('a', 'a+b', 'a*', 'a*+b', 'a*+b*', 'a(b)*+c', '[dog]*+[cat]', '',' ');
+my @regexes=('a', 'a+b', 'a*', 'a*+b', 'a*+b*', 'a(b)*+c', '[dog]*+[cat]', 'a&b', 'a*&b', 'a*&b*', '',' ');
 print join(",",@regexes),"\n";
 
 my $x = 50;
@@ -23,7 +26,16 @@ for my $s (@regexes) {
     $symbol->_decrement_count;
     #    print $symbol->get_count,"\n"; 
   }
-  print Dumper($symbol);
+  #
+  # Extract RE object, from FLAT::Symbol::Regex, and do stuff with it, 
+  # and exercise the transformations and string pumping 
+  #
+  #print Dumper($symbol);
+  my $DFA = $symbol->{OBJECT}->as_pfa->as_xfa->as_min_dfa;
+  my $next = $DFA->new_deepdft_string_generator(5);
+  while (my $string = $next->()) {
+    print "  $string\n";
+  }
 }
 
 
