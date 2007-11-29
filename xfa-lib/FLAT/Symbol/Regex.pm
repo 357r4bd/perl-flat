@@ -23,7 +23,21 @@ sub as_string {
 
 sub union {
   my $self = shift;
-  $self->{OBJECT}->union($_[0]->{OBJECT});
+  $self->{OBJECT} = $self->{OBJECT}->union($_[0]->{OBJECT});
+  # update label
+  $self->{LABEL} = $self->{OBJECT}->as_string;
+}
+
+sub concat {
+  my $self = shift;
+  $self->{OBJECT} = $self->{OBJECT}->concat($_[0]->{OBJECT});
+  # update label
+  $self->{LABEL} = $self->{OBJECT}->as_string;
+}
+
+sub kleene {
+  my $self = shift;
+  $self->{OBJECT} = $self->{OBJECT}->kleene();
   # update label
   $self->{LABEL} = $self->{OBJECT}->as_string;
 }
