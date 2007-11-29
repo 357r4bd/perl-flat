@@ -42,4 +42,11 @@ sub kleene {
   $self->{LABEL} = $self->{OBJECT}->as_string;
 }
 
+sub shuffle {
+  my $self = shift;
+  $self->{OBJECT} = $self->{OBJECT}->shuffle($_[0]->{OBJECT});
+  # update label
+  $self->{LABEL} = $self->{OBJECT}->as_string;
+}
+
 1; 
