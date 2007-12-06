@@ -5,7 +5,7 @@ use FLAT::DFA;
 use Carp;
 
 use vars '$VERSION';
-$VERSION = 0.9;
+$VERSION = 0.9.1;
 
 =head1 NAME
 
