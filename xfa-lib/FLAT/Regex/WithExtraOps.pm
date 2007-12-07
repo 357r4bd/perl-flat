@@ -4,14 +4,6 @@ use base 'FLAT::Regex';
 use strict;
 use Carp;
 
-my $PARSER = FLAT::Regex::Parser->new(qw[ alt concat star negate shuffle ]);
-sub _parser { $PARSER }
-
-sub members {
-    my $self = shift;
-    wantarray ? @$self[0 .. $#$self] : $self->[0];
-}
-
 #### Precedence
 # 30 ::star
 # 20 ::concat
@@ -20,7 +12,22 @@ sub members {
 # 10 ::alt
 # 0  ::atomic
 
+my $PARSER = FLAT::Regex::Parser->new(qw[ alt concat star negate shuffle ]);
+sub _parser { $PARSER }
+
+sub negate {
+    my $self = $_[0];
+    my $op   = FLAT::Regex::Op::negate->new( map { $_->as_regex->op } @_ );
+    $self->_from_op($op);
+}
+
 ###############################
+sub shuffle {
+    my $self = $_[0];
+    my $op   = FLAT::Regex::Op::shuffle->new( map { $_->as_regex->op } @_ );
+    $self->_from_op($op);
+}
+
 package FLAT::Regex::Op::negate;
 use base "FLAT::Regex::Op";
 use Carp;

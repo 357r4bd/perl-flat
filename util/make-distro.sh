@@ -4,6 +4,7 @@ OK=0
 
 mkdir FLAT-$$                 &&\
 cp -r ../lib FLAT-$$          &&\
+cp -r ../README FLAT-$$       &&\
 cp -r ../t FLAT-$$            &&\
 cp -r ../MANIFEST FLAT-$$     &&\
 cp -r ../Makefile.PL FLAT-$$  &&\
