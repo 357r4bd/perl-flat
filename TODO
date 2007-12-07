@@ -1,2 +1,4 @@
-1. XFA
+0. implement random string iterative string gen by choosing random sub refs 
+   in the call stack to follow
+1. XFA (making progress, may even be "there")
 2. xDFA->RE
