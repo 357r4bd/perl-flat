@@ -42,28 +42,52 @@ sub read_graph {
   return %graph;
 }
 
+sub array_unique {
+  my %ret = ();
+  foreach (@_) {
+    $ret{$_}++;
+  }
+  return keys(%ret);
+}
+
+sub array_is_subset {
+  my $set1 = shift;
+  my $set2 = shift;
+  my $ok = 1;
+  my %setcount = ();
+  foreach (array_unique(@{$set1}),array_unique(@{$set2})) {
+    $setcount{$_}++;
+  }
+  foreach (array_unique(@{$set1})) {
+    if ($setcount{$_} != 2) {
+      $ok = 0;
+      last;
+    }
+  }
+  return $ok;
+}
+
 sub acyclic {
   my $startNode = shift;
   my $dflabel_ref = shift;
   my $lastDFLabel = shift;
   my $nodes = shift;
   my $string = shift;
-  push(@{$string},$startNode);
+  my $found = 0;
   # tree edge detection
-  if (!exists($dflabel_ref->{$startNode})) {
-    $dflabel_ref->{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
-    foreach my $adjacent (@{$nodes->{$startNode}}) {
-      if (!exists($dflabel_ref->{$adjacent})) {      # initial tree edge
-        acyclic($adjacent,\%{$dflabel_ref},$lastDFLabel,\%{$nodes},\@{$string});
-      } else {
-        print join('~>',@{$string}),"\n";
-      }
-    } 
-  }
-  pop @{$string};
+  $dflabel_ref->{$startNode} = ++$lastDFLabel;  # the order inwhich this link was explored
+  foreach my $adjacent (@{$nodes->{$startNode}}) {
+    push(@{$string},$adjacent);
+    if (!exists($dflabel_ref->{$adjacent})) {      # initial tree edge
+      acyclic($adjacent,\%{$dflabel_ref},$lastDFLabel,\%{$nodes},\@{$string});
+    } elsif (!$found) {
+      print join('~>',@{$string}),"\n";
+      $found++;
+    }
+    pop @{$string};
+  } 
   # remove startNode entry to facilitate acyclic path determination
   delete($dflabel_ref->{$startNode});
-  #$lastDFLabel--;
   return;     
 };
 
@@ -71,7 +95,7 @@ my $self = shift;
 my %dflabel       = (); # lookup table for dflable
 my %backtracked   = (); # lookup table for backtracked edges
 my $lastDFLabel   = 0;
-my @string        = ();
+my @string        = (0);
 my %nodes         = read_graph;
 # output format is the actual PRE followed by all found strings
 acyclic($SRC_NODE,\%dflabel,$lastDFLabel,\%nodes,\@string);
