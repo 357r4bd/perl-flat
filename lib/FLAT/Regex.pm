@@ -64,7 +64,7 @@ sub as_regex {
 
 sub union {
     my $self = $_[0];
-    my $op   = FLAT::Regex::op::alt->new( map { $_->as_regex->op } @_ );
+    my $op   = FLAT::Regex::Op::alt->new( map { $_->as_regex->op } @_ );
     $self->_from_op($op);
 }
 
@@ -81,13 +81,13 @@ sub complement {
 
 sub concat {
     my $self = $_[0];
-    my $op = FLAT::Regex::op::concat->new( map { $_->as_regex->op } @_ );
+    my $op = FLAT::Regex::Op::concat->new( map { $_->as_regex->op } @_ );
     $self->_from_op($op);
 }
 
 sub kleene {
     my $self = shift;
-    my $op   = FLAT::Regex::op::star->new( $self->op );
+    my $op   = FLAT::Regex::Op::star->new( $self->op );
     $self->_from_op($op);
 }
 

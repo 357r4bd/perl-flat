@@ -16,7 +16,6 @@ lib/FLAT/FA.pm
 lib/FLAT/NFA.pm
 lib/FLAT/DFA.pm
 lib/FLAT/PFA.pm
-lib/FLAT/XFA.pm
 lib/FLAT/Transition.pm
 lib/FLAT.pm
 bin/util-put.pl

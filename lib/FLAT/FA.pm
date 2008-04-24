@@ -4,7 +4,7 @@ use strict;
 use base 'FLAT';
 use Carp;
 
-use FLAT::Transition;
+use FLAT::Transition::Simple;
 
 =head1 NAME
 
@@ -28,7 +28,8 @@ sub new {
     bless {
         STATES => [],
         TRANS  => [],
-        ALPHA  => {}
+        ALPHA  => {},
+        ALPHA_BLESSED => {},
     }, $pkg;
 }
 
@@ -141,15 +142,27 @@ sub get_accepting {
 
 sub _decr_alphabet {
     my ($self, $t) = @_;
+
     return if not defined $t;
     for ($t->alphabet) {
         delete $self->{ALPHA}{$_} if not --$self->{ALPHA}{$_};
+        # supposed to delete key when _decrement_count returns 0, so need to test this
+        delete $self->{ALPHA_BLESSED}{$_} if not $self->{ALPHA_BLESSED}{$_}->_decrement_count; 
     }
 }
 sub _incr_alphabet {
     my ($self, $t) = @_;
+
     return if not defined $t;
-    $self->{ALPHA}{$_}++ for $t->alphabet;
+    for ($t->alphabet) {
+      $self->{ALPHA}{$_}++;
+
+      if (!exists($self->{ALPHA_BLESSED}{$_})) {
+        $self->{ALPHA_BLESSED}{$_} = $self->{ALPHA_CLASS}->new($_) 
+      } else {
+        $self->{ALPHA_BLESSED}{$_}->_increment_count;
+      }
+    }
 }
 
 sub set_transition {
@@ -160,9 +173,8 @@ sub set_transition {
     return if not @label;
     
     my $t = $self->{TRANS_CLASS}->new(@label);
-    $self->_incr_alphabet($t);
-
     $self->{TRANS}[$state1][$state2] = $t;
+    $self->_incr_alphabet($t);
 }
 
 sub add_transition {
@@ -386,8 +398,16 @@ sub _swallow {
 
     push @{ $self->{STATES} }, @{ clone $other->{STATES} };
     
-    $self->{ALPHA}{$_} += $other->{ALPHA}{$_}
-        for keys %{ $other->{ALPHA} };
+    for (keys %{ $other->{ALPHA} }) { 
+      $self->{ALPHA}{$_} += $other->{ALPHA}{$_};
+
+      # towards objects as symbols
+      if (!exists($self->{ALPHA_BLESSED}{$_})) {
+        $self->{ALPHA_BLESSED}{$_} = $other->{ALPHA_BLESSED}{$_}; 
+      } else {
+        $self->{ALPHA_BLESSED}{$_}->_increment_count($other->{ALPHA_BLESSED}{$_}->get_count);
+      }
+    }
     
     return map { $_ + $N1 } $other->get_states;
 }

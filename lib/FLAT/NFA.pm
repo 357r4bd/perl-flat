@@ -3,7 +3,8 @@ package FLAT::NFA;
 use strict;
 use base 'FLAT::FA';
 
-use FLAT::Transition;
+use FLAT::Transition::Simple;
+use FLAT::Symbol::Regex;
 
 =head1 NAME
 
@@ -19,7 +20,8 @@ either with characters or the empty string (epsilon).
 sub new {
     my $pkg = shift;
     my $self = $pkg->SUPER::new(@_);
-    $self->{TRANS_CLASS} = "FLAT::Transition";
+    $self->{TRANS_CLASS} = "FLAT::Transition::Simple";
+    $self->{ALPHA_CLASS} = "FLAT::Symbol::Regex";
     return $self;
 }
 
