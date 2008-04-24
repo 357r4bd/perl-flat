@@ -4,7 +4,7 @@ use strict;
 
 use lib '..';
 use FLAT::Regex::WithExtraOps;
-use FLAT::XFA;
+use FLAT::NFA;
 use FLAT::PFA;
 use FLAT::DFA;
 use FLAT::Symbol::Regex;
@@ -32,7 +32,7 @@ for my $s (@regexes) {
   # and exercise the transformations and string pumping 
   #
   #print Dumper($symbol);
-  my $DFA = $symbol->{OBJECT}->as_pfa->as_xfa->as_min_dfa;
+  my $DFA = $symbol->{OBJECT}->as_pfa->as_nfa->as_min_dfa;
   my $next = $DFA->new_deepdft_string_generator(5);
   while (my $string = $next->()) {
     #print "  $string\n";

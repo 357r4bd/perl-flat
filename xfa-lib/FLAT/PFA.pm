@@ -1,6 +1,6 @@
 package FLAT::PFA;
 use strict;
-use base 'FLAT::XFA';
+use base 'FLAT::NFA';
 use Carp;
 
 use FLAT::Transition;
@@ -10,9 +10,9 @@ use constant LAMBDA => '#lambda';
 # Note: in a PFA, states are made up of active nodes.  In this implementation, we have
 # decided to retain the functionality of the state functions in FA.pm, although the entities
 # being manipulated are technically nodes, not states.  States are only explicitly tracked
-# once the PFA is serialized into an XFA.  Therefore, the TRANS member of the PFA object is
+# once the PFA is serialized into an NFA.  Therefore, the TRANS member of the PFA object is
 # the nodal transition function, gamma.  The state transition function, delta, is not used
-# in anyway, but is derived out of the PFA->XFA conversion process.
+# in anyway, but is derived out of the PFA->NFA conversion process.
 
 
 # The new way of doing things eliminated from PFA.pm of FLAT::Legacy is the 
@@ -20,11 +20,11 @@ use constant LAMBDA => '#lambda';
 
 sub new {
     my $pkg = shift;
-    my $self = $pkg->SUPER::new(@_); # <-- SUPER is FLAT::XFA
+    my $self = $pkg->SUPER::new(@_); # <-- SUPER is FLAT::NFA
     return $self;
 }
 
-# Singleton is no different than the XFA singleton
+# Singleton is no different than the NFA singleton
 sub singleton {
     my ($class, $char) = @_;
     my $pfa = $class->new;
@@ -115,7 +115,7 @@ sub get_tied {
 
 ##############
 
-# joins two PFAs in a union (or) - no change from XFA
+# joins two PFAs in a union (or) - no change from NFA
 sub union {
     my @pfas = map { $_->as_pfa } @_;    
     my $result = $pfas[0]->clone;    
@@ -124,7 +124,7 @@ sub union {
     $result;
 }
 
-# joins two PFAs via concatenation  - no change from XFA
+# joins two PFAs via concatenation  - no change from NFA
 sub concat {
     my @pfas = map { $_->as_pfa } @_;
     
@@ -155,7 +155,7 @@ sub concat {
     $result;
 }
 
-# forms closure around a the given PFA  - no change from XFA
+# forms closure around a the given PFA  - no change from NFA
 sub kleene {
     my $result = $_[0]->clone;
     
@@ -177,9 +177,9 @@ sub kleene {
     $result;
 }
 
-sub as_xfa { 
+sub as_nfa { 
     my $self = shift;
-    my $result = FLAT::XFA->new();    
+    my $result = FLAT::NFA->new();    
     # Dstates is initially populated with the start state, which 
     # is exactly the set of all nodes marked as a starting node
     my @Dstates = [sort($self->get_starting())]; # I suppose all start states are considered 'tied'
@@ -244,21 +244,21 @@ A FLAT::PFA object is a finite automata whose transitions are labeled either
 with characters, the empty string (epsilon), or a concurrent line of execution 
 (lambda).  It essentially models two FSA in a non-deterministic way such that 
 a string is valid it puts the FSA of the shuffled languages both into a final, 
-or accepting, state.  A PFA is an XFA, and as such exactly describes a regular 
+or accepting, state.  A PFA is an NFA, and as such exactly describes a regular 
 language.
 
 A PFA contains nodes and states.  A state is made up of whatever nodes happen 
 to be active.  There are two transition functions, nodal transitions and state 
-transitions.  When a PFA is converted into a XFA, there is no longer a need for 
+transitions.  When a PFA is converted into a NFA, there is no longer a need for 
 nodes or nodal transitions, so they go are eliminated.  PFA model state spaces 
-much more compactly than XFA, and an N state PFA may represent 2**N non-deterministic 
+much more compactly than NFA, and an N state PFA may represent 2**N non-deterministic 
 states. This also means that a PFA may represent up to 2^(2^N) deterministic states.
 
 =head1 USAGE
 
 (not implemented yet)
 
-In addition to implementing the interface specified in L<FLAT> and L<FLAT::XFA>, 
+In addition to implementing the interface specified in L<FLAT> and L<FLAT::NFA>, 
 FLAT::PFA objects provide the following PFA-specific methods:
 
 =over
@@ -268,9 +268,9 @@ FLAT::PFA objects provide the following PFA-specific methods:
 Shuffle construct for building a PFA out of a PRE (i.e., a regular expression with
 the shuffle operator)
 
-=item $pfa-E<gt>as_xfa
+=item $pfa-E<gt>as_nfa
 
-Converts a PFA to an XFA by enumerating all states; similar to the Subset Construction
+Converts a PFA to an NFA by enumerating all states; similar to the Subset Construction
 Algorithm, it does not implement e-closure.  Instead it treats epsilon transitions
 normally, and joins any states resulting from a lambda (concurrent) transition
 using an epsilon transition.

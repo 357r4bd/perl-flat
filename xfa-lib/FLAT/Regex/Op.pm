@@ -39,8 +39,8 @@ sub as_perl_regex {
     return $r =~ /^\w$/ ? $r : "(?:$r)";
 }
 
-sub as_xfa {
-    FLAT::XFA->singleton( $_[0]->members );
+sub as_nfa {
+    FLAT::NFA->singleton( $_[0]->members );
 }
 
 sub as_pfa {
@@ -95,9 +95,9 @@ sub as_perl_regex {
     return $prec > $self->precedence ? "(?:$result)" : $result;   
 }
 
-sub as_xfa {
+sub as_nfa {
     my $self = shift;
-    $self->members->as_xfa->kleene;
+    $self->members->as_nfa->kleene;
 }
 
 sub as_pfa {
@@ -152,9 +152,9 @@ sub as_perl_regex {
     return $prec > $self->precedence ? "(?:$result)" : $result;
 }
 
-sub as_xfa {
+sub as_nfa {
     my $self = shift;
-    my @parts = map { $_->as_xfa } $self->members;
+    my @parts = map { $_->as_nfa } $self->members;
     $parts[0]->concat( @parts[1..$#parts] );
 }
 
@@ -230,9 +230,9 @@ sub as_perl_regex {
     return $prec > $self->precedence ? "(?:$result)" : $result;
 }
 
-sub as_xfa {
+sub as_nfa {
     my $self = shift;
-    my @parts = map { $_->as_xfa } $self->members;
+    my @parts = map { $_->as_nfa } $self->members;
     $parts[0]->union( @parts[1..$#parts] );
 }
 

@@ -1,7 +1,7 @@
 package FLAT::CMD;
 use FLAT;
 use FLAT::Regex;
-use FLAT::XFA;
+use FLAT::NFA;
 use FLAT::DFA;
 use Carp;
 
@@ -19,7 +19,7 @@ things a lot more convenient.
 =head1 USAGE
 
 All regular language objects in FLAT implement the following methods.
-Specific regular language representations (regex, XFA, DFA) may implement
+Specific regular language representations (regex, NFA, DFA) may implement
 additional methods that are outlined in the repsective POD pages.
 
 =cut
@@ -28,8 +28,8 @@ additional methods that are outlined in the repsective POD pages.
 use base 'Exporter'; #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
 
-@EXPORT = qw(compare dump dfa2gv xfa2gv pfa2gv dfa2undgv xfa2undgv pfa2undgv dfa2digraph
-	     xfa2digraph pfa2digraph dfa2undirected xfa2undirected pfa2undirected random_pre random_re
+@EXPORT = qw(compare dump dfa2gv nfa2gv pfa2gv dfa2undgv nfa2undgv pfa2undgv dfa2digraph
+	     nfa2digraph pfa2digraph dfa2undirected nfa2undirected pfa2undirected random_pre random_re
              savedfa test help
 	     );
 
@@ -65,16 +65,16 @@ __________             .__    ___________.____         ___________
     "compare  're1','re2'"   # comares 2 regexs | see note [2] 
     "dump     're1'"         # dumps parse trees | see note[1]	   
     "dfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
-    "xfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
+    "nfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
     "pfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
     "dfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
-    "xfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
+    "nfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
     "pfa2undgv  're1'"       # dumps graphviz undirected graph desc | see note[1]  
     "dfa2digraph 're1'"      # dumps directed graph without transitions
-    "xfa2digraph 're1'"      # dumps directed graph without transitions
+    "nfa2digraph 're1'"      # dumps directed graph without transitions
     "pfa2digraph 're1'"      # dumps directed graph without transitions
     "dfa2undirected 're1'"   # dumps undirected graph without transitions
-    "xfa2undirected 're1'"   # dumps undirected graph without transitions
+    "nfa2undirected 're1'"   # dumps undirected graph without transitions
     "pfa2undirected 're1'"   # dumps undirected graph without transitions
      random_pre 
      random_re
@@ -123,11 +123,11 @@ sub savedfa {
     } 
     use FLAT::Regex::WithExtraOps;
     use FLAT::PFA;
-    use FLAT::XFA;
+    use FLAT::NFA;
     use FLAT::DFA;
     use Storable;
     # caches results, loads them in if detexted
-    my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_xfa->as_dfa->as_min_dfa->trim_sinks;
+    my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
     store $dfa, "$PRE.dat";
 }
 
@@ -137,11 +137,11 @@ sub savedfa {
 sub test {
   use FLAT::Regex::WithExtraOps;
   use FLAT::PFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::DFA;
   # handles multiple strings; first is considered the regex
   if (@_) 
-  { my $FA = FLAT::Regex::WithExtraOps->new(shift @_)->as_pfa()->as_xfa->as_dfa(); 
+  { my $FA = FLAT::Regex::WithExtraOps->new(shift @_)->as_pfa()->as_nfa->as_dfa(); 
     foreach (@_)
     { if ($FA->is_valid_string($_)) {
         print "(+): $_\n";
@@ -154,7 +154,7 @@ sub test {
     while (<STDIN>) {
       chomp;
       if ($. == 1) { #<-- uses first line as regex!
-        $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa->as_dfa();
+        $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa->as_dfa();
       } else {
 	if ($FA->is_valid_string($_)) {
 	  print "(+): $_\n";
@@ -191,36 +191,36 @@ sub dump {
 sub dfa2gv {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::PFA;  
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa()->as_dfa()->as_min_dfa()->trim_sinks();
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
       print $FA->as_graphviz;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa()->as_dfa->as_min_dfa()->trim_sinks();
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
        print $FA->as_graphviz;} 
   }
 }
 
 # dumps graphviz notation
 # Usage:
-# perl -MFLAT -e "xfa2gv('a&b&c&d*e*')"
-sub xfa2gv {
+# perl -MFLAT -e "nfa2gv('a&b&c&d*e*')"
+sub nfa2gv {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::PFA;  
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa();
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
       print $FA->as_graphviz;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa();
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
        print $FA->as_graphviz;} 
   }
 }
@@ -251,36 +251,36 @@ sub pfa2gv {
 sub dfa2undgv {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::PFA;  
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa()->as_dfa()->as_min_dfa()->trim_sinks();
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
       print $FA->as_undirected_graphviz;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa()->as_dfa->as_min_dfa()->trim_sinks();
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
        print $FA->as_undirected_graphviz;} 
   }
 }
 
 # dumps graphviz notation
 # Usage:
-# perl -MFLAT -e "xfa2undgv('a&b&c&d*e*')"
-sub xfa2undgv {
+# perl -MFLAT -e "nfa2undgv('a&b&c&d*e*')"
+sub nfa2undgv {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::PFA;  
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa();
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
       print $FA->as_undirected_graphviz;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa();
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
        print $FA->as_undirected_graphviz;} 
   }
 }
@@ -309,17 +309,17 @@ sub pfa2undgv {
 sub dfa2digraph {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::PFA;  
   # trims sink states from min-dfa since transitions are gone 
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa()->as_dfa->as_min_dfa->trim_sinks(); 
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks(); 
        print $FA->as_digraph;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa()->as_dfa->as_min_dfa->trim_sinks();
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks();
        print $FA->as_digraph;} 
   }
   print "\n";
@@ -327,20 +327,20 @@ sub dfa2digraph {
 
 # dumps directed graph using Kundu notation
 # Usage:
-# perl -MFLAT -e "xfa2directed('a&b&c&d*e*')"
-sub xfa2digraph {
+# perl -MFLAT -e "nfa2directed('a&b&c&d*e*')"
+sub nfa2digraph {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::PFA;  
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa(); 
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa(); 
        print $FA->as_digraph;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa();
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
        print $FA->as_digraph;} 
   }
   print "\n";
@@ -371,17 +371,17 @@ sub pfa2digraph {
 sub dfa2undirected {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::PFA;  
   # trims sink states from min-dfa since transitions are gone 
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa()->as_dfa->as_min_dfa->trim_sinks(); 
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks(); 
        print $FA->as_undirected;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa()->as_dfa->as_min_dfa->trim_sinks();
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks();
        print $FA->as_undirected;} 
   }
   print "\n";
@@ -389,20 +389,20 @@ sub dfa2undirected {
 
 # dumps undirected graph using Kundu notation
 # Usage:
-# perl -MFLAT -e "xfa2undirected('a&b&c&d*e*')"
-sub xfa2undirected {
+# perl -MFLAT -e "nfa2undirected('a&b&c&d*e*')"
+sub nfa2undirected {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
-  use FLAT::XFA;
+  use FLAT::NFA;
   use FLAT::PFA;  
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa(); 
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa(); 
        print $FA->as_undirected;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_xfa();
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
        print $FA->as_undirected;} 
   }
   print "\n";
@@ -436,8 +436,8 @@ sub compare {
   use FLAT::PFA;
   my $PFA1 = FLAT::Regex::WithExtraOps->new(shift)->as_pfa();
   my $PFA2 = FLAT::Regex::WithExtraOps->new(shift)->as_pfa();
-  my $DFA1 = $PFA1->as_xfa->as_min_dfa;
-  my $DFA2 = $PFA2->as_xfa->as_min_dfa;
+  my $DFA1 = $PFA1->as_nfa->as_min_dfa;
+  my $DFA2 = $PFA2->as_nfa->as_min_dfa;
   if ($DFA1->equals($DFA2)) {
     print "Yes\n";
   } else {

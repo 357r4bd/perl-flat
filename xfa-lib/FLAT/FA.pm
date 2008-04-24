@@ -238,7 +238,7 @@ sub predecessors {
     $self->clone->reverse->successors(@_);
 }
 
-# reverse  - no change from XFA
+# reverse  - no change from NFA
 sub reverse {
     my $self = $_[0]->clone;
     $self->_transpose;
@@ -523,7 +523,7 @@ transition having any of the given labels. If no labels are given, returns
 the states reachable by any (single) transition.
 
 Note that this method makes no distinction for epsilon transitions, these
-are only special in FLAT::XFA objects.
+are only special in FLAT::NFA objects.
 
 =item $fa-E<gt>alphabet
 

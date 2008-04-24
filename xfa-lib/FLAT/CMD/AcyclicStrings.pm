@@ -5,7 +5,7 @@ use base 'FLAT::CMD';
 use FLAT;
 use FLAT::Regex::WithExtraOps;
 use FLAT::PFA;
-use FLAT::XFA;
+use FLAT::NFA;
 use FLAT::DFA;
 use Storable;
 use Carp;
@@ -42,7 +42,7 @@ sub as_strings {
     my $RE = FLAT::Regex::WithExtraOps->new($PRE);
     printf("%s\n",$RE->as_string());
     if (!-e "$PRE.dat") {
-      $dfa = $RE->as_pfa->as_xfa->as_dfa->as_min_dfa->trim_sinks;
+      $dfa = $RE->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
       #store $dfa, "$PRE.dat";
     } else {
       print STDERR "$PRE.dat found..";

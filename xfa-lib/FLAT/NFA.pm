@@ -1,4 +1,4 @@
-package FLAT::XFA;
+package FLAT::NFA;
 
 use strict;
 use base 'FLAT::FA';
@@ -8,11 +8,11 @@ use FLAT::Symbol::Regex;
 
 =head1 NAME
 
-FLAT::XFA - Nondeterministic finite automata
+FLAT::NFA - Nondeterministic finite automata
 
 =head1 SYNOPSIS
 
-A FLAT::XFA object is a finite automata whose transitions are labeled
+A FLAT::NFA object is a finite automata whose transitions are labeled
 either with characters or the empty string (epsilon).
 
 =cut
@@ -27,59 +27,59 @@ sub new {
 
 sub singleton {
     my ($class, $char) = @_;
-    my $xfa = $class->new;
+    my $nfa = $class->new;
 
     if (not defined $char) {
-        $xfa->add_states(1);
-        $xfa->set_starting(0);
+        $nfa->add_states(1);
+        $nfa->set_starting(0);
     } elsif ($char eq "") {
-        $xfa->add_states(1);
-        $xfa->set_starting(0);
-        $xfa->set_accepting(0);
+        $nfa->add_states(1);
+        $nfa->set_starting(0);
+        $nfa->set_accepting(0);
     } else {
-        $xfa->add_states(2);
-        $xfa->set_starting(0);
-        $xfa->set_accepting(1);
-        $xfa->set_transition(0, 1, $char);
+        $nfa->add_states(2);
+        $nfa->set_starting(0);
+        $nfa->set_accepting(1);
+        $nfa->set_transition(0, 1, $char);
     }
-    return $xfa;
+    return $nfa;
 }
 
-sub as_xfa { $_[0]->clone }
+sub as_nfa { $_[0]->clone }
 
 sub union {
-    my @xfas = map { $_->as_xfa } @_;    
-    my $result = $xfas[0]->clone;    
-    $result->_swallow($_) for @xfas[1 .. $#xfas];
+    my @nfas = map { $_->as_nfa } @_;    
+    my $result = $nfas[0]->clone;    
+    $result->_swallow($_) for @nfas[1 .. $#nfas];
     $result;
 }
 
 sub concat {
-    my @xfas = map { $_->as_xfa } @_;
+    my @nfas = map { $_->as_nfa } @_;
     
-    my $result = $xfas[0]->clone;
+    my $result = $nfas[0]->clone;
     my @newstate = ([ $result->get_states ]);
     my @start = $result->get_starting;
 
-    for (1 .. $#xfas) {
-        push @newstate, [ $result->_swallow( $xfas[$_] ) ];
+    for (1 .. $#nfas) {
+        push @newstate, [ $result->_swallow( $nfas[$_] ) ];
     }
 
     $result->unset_accepting($result->get_states);
     $result->unset_starting($result->get_states);
     $result->set_starting(@start);
     
-    for my $xfa_id (1 .. $#xfas) {
-        for my $s1 ($xfas[$xfa_id-1]->get_accepting) {
-        for my $s2 ($xfas[$xfa_id]->get_starting) {
+    for my $nfa_id (1 .. $#nfas) {
+        for my $s1 ($nfas[$nfa_id-1]->get_accepting) {
+        for my $s2 ($nfas[$nfa_id]->get_starting) {
             $result->set_transition(
-                $newstate[$xfa_id-1][$s1],
-                $newstate[$xfa_id][$s2], "" );
+                $newstate[$nfa_id-1][$s1],
+                $newstate[$nfa_id][$s2], "" );
         }}
     }
 
     $result->set_accepting(
-        @{$newstate[-1]}[ $xfas[-1]->get_accepting ] );
+        @{$newstate[-1]}[ $nfas[-1]->get_accepting ] );
 
     $result;
 }
@@ -440,55 +440,55 @@ __END__
 
 =head1 USAGE
 
-In addition to implementing the interface specified in L<FLAT>, FLAT::XFA
-objects provide the following XFA-specific methods:
+In addition to implementing the interface specified in L<FLAT>, FLAT::NFA
+objects provide the following NFA-specific methods:
 
 =over
 
-=item $xfa-E<gt>epsilon_closure(@states)
+=item $nfa-E<gt>epsilon_closure(@states)
 
 Returns the set of states (without duplicates) which are reachable from
 @states via zero or more epsilon-labeled transitions.
 
-=item $xfa-E<gt>trace($string)
+=item $nfa-E<gt>trace($string)
 
 Returns a list of N+1 arrayrefs, where N is the length of $string. The
 I-th arrayref contains the states which are reachable from the starting
-state(s) of $xfa after reading I characters of $string. Correctly accounts
+state(s) of $nfa after reading I characters of $string. Correctly accounts
 for epsilon transitions.
 
-=item $xfa-E<gt>as_undirected
+=item $nfa-E<gt>as_undirected
 
 Outputs FA in a format that may be easily read into an external program as
 a description of an undirected graph.
 
-=item $xfa-E<gt>as_digraph
+=item $nfa-E<gt>as_digraph
 
 Outputs FA in a format that may be easily read into an external program as
 a description of an directed graph.
 
-=item $xfa-E<gt>as_gdl
+=item $nfa-E<gt>as_gdl
 
 Outputs FA in Graph Description Language (GDL), including directed transitions 
 with symbols and state names labeled.
 
-=item $xfa-E<gt>as_graphviz
+=item $nfa-E<gt>as_graphviz
 
 Outputs FA in Graphviz format, including directed transitions with symbols and
 and state names labeled.  This output may be directly piped into any of the
 Graphviz layout programs, and in turn one may output an image using a single
-commandline instruction. C<fash> uses this function to implement its "xfa2gv"
+commandline instruction. C<fash> uses this function to implement its "nfa2gv"
 command:
 
- fash xfa2gv "a*b" | dot -Tpng > xfa.png
+ fash nfa2gv "a*b" | dot -Tpng > nfa.png
 
-=item $xfa-E<gt>as_undirected_graphviz
+=item $nfa-E<gt>as_undirected_graphviz
 
 Outputs FA in Graphviz format, with out the directed transitions or labels.
 The output is suitable for any of the Graphvize layout programs, as discussed
 above.
 
-=item $xfa-E<gt>as_summary
+=item $nfa-E<gt>as_summary
 
 Outputs a summary of the FA, including its states, symbols, and transition matrix.
 It is useful for manually validating what the FA looks like.

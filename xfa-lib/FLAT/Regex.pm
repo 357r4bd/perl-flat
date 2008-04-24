@@ -47,8 +47,8 @@ sub contains {
     $string =~ $self->as_perl_regex(anchored => 1);
 }
 
-sub as_xfa {
-    $_[0]->op->as_xfa;
+sub as_nfa {
+    $_[0]->op->as_nfa;
 }
 
 sub as_pfa {

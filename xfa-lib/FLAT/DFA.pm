@@ -1,7 +1,7 @@
 package FLAT::DFA;
 
 use strict;
-use base 'FLAT::XFA';
+use base 'FLAT::NFA';
 use Storable qw(dclone);
 use Carp;
 $|++;
@@ -424,7 +424,7 @@ transition for each available label/character.
 
 =head1 USAGE
 
-In addition to implementing the interface specified in L<FLAT> and L<FLAT::XFA>, 
+In addition to implementing the interface specified in L<FLAT> and L<FLAT::NFA>, 
 FLAT::DFA objects provide the following DFA-specific methods:
 
 =over
@@ -436,7 +436,7 @@ the current start state so that a new one may be set.
 
 =item $dfa-E<gt>trim_sinks
 
-This method returns a FLAT::DFA (though in theory an XFA) that is lacking a transition for 
+This method returns a FLAT::DFA (though in theory an NFA) that is lacking a transition for 
 all symbols from all states.  This method eliminates all transitions from all states that lead
 to a sink state; it also eliminates the sink state.
 
@@ -488,12 +488,12 @@ Example:
  #!/usr/bin/env perl
  use strict; 
  use FLAT::DFA;
- use FLAT::XFA;
+ use FLAT::NFA;
  use FLAT::PFA;
  use FLAT::Regex::WithExtraOps; 
 
  my $PRE = "abc&(def)*";
- my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_xfa->as_dfa->as_min_dfa->trim_sinks; 
+ my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks; 
  my $next = $dfa->new_acyclic_string_generator; 
  print "PRE: $PRE\n";
  print "Acyclic:\n";
@@ -515,12 +515,12 @@ infinite languages.
  #!/usr/bin/env perl
  use strict; 
  use FLAT::DFA;
- use FLAT::XFA;
+ use FLAT::NFA;
  use FLAT::PFA;
  use FLAT::Regex::WithExtraOps; 
 
  my $PRE = "abc&(def)*";
- my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_xfa->as_dfa->as_min_dfa->trim_sinks; 
+ my $dfa = FLAT::Regex::WithExtraOps->new($PRE)->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks; 
  my $next = $dfa->new_deepdft_string_generator();
  print "Deep DFT (default):\n";
  for (1..10) {

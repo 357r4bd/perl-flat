@@ -4,12 +4,12 @@ use strict;
 use lib qw(../);
 use FLAT;
 use FLAT::DFA;
-use FLAT::XFA;
+use FLAT::NFA;
 use FLAT::Regex::WithExtraOps;
 
-my $XFA1;
+my $NFA1;
 
-$XFA1 = FLAT::Regex->new($ARGV[0])->as_xfa();
+$NFA1 = FLAT::Regex->new($ARGV[0])->as_nfa();
 
 use Data::Dumper;
-print Dumper($XFA1);
+print Dumper($NFA1);
