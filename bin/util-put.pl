@@ -5,6 +5,10 @@ use warnings;
 use Config;
 use File::Copy;
 
+# do not actually install fash atm
+
+__END__
+
 # copys bin/fash to system bin directory and ensures its is 755
 
 if (-w $Config{installbin})
