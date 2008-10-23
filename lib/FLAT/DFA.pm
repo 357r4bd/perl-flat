@@ -98,28 +98,23 @@ sub trim_sinks {
   return $result;
 }
 
+# classical DFA minimization using equivalence classes
 sub as_min_dfa {
-
     my $self     = shift()->clone;
     my $N        = $self->num_states;
     my @alphabet = $self->alphabet;
-
     my ($start)  = $self->get_starting;
     my %final    = map { $_ => 1 } $self->get_accepting;
-
     my @equiv = map [ (0) x ($_+1), (1) x ($N-$_-1) ], 0 .. $N-1;
-
     while (1) {
         my $changed = 0;
         for my $s1 (0 .. $N-1) {
         for my $s2 (grep { $equiv[$s1][$_] } 0 .. $N-1) {
-            
             if ( 1 == grep defined, @final{$s1, $s2} ) {
                 $changed = 1;
                 $equiv[$s1][$s2] = 0;
                 next;
             }
-            
             for my $char (@alphabet) {
                 my @t = sort { $a <=> $b } $self->successors([$s1,$s2], $char);
                 next if @t == 1;
@@ -130,7 +125,6 @@ sub as_min_dfa {
                 }
             }
         }}
-        
         last if !$changed;
     }
     my $result = (ref $self)->new;
@@ -144,7 +138,6 @@ sub as_min_dfa {
 
         @newstate{@c} = ( $result->add_states(1) ) x @c;
     }
-
     for my $c (@classes) {
         my $s = $c->[0];
         for my $char (@alphabet) {
@@ -152,13 +145,16 @@ sub as_min_dfa {
             $result->add_transition( $newstate{$s}, $newstate{$next}, $char );
         }
     }
-    
     $result->set_starting( $newstate{$start} );
     $result->set_accepting( $newstate{$_} )
         for $self->get_accepting;
-    
     $result;
+}
 
+# Need to implement! http://www.ianab.com/hyper/ 
+# DFA hyper-minimization using equivalence classes
+sub as_hyper_min_dfa {
+    my $self     = shift()->clone;
 }
 
 # the validity of a given string <-- executes symbols over DFA
@@ -314,10 +310,12 @@ sub get_acyclic_sub {
     } 
  
   }
+  # returns a complex data structure in the form of a hash reference
   return {substack=>[@ret],
           lastDFLabel=>$lastDFLabel,
           string => ($self->array_is_subset([$start],[@{$accepting_ref}]) ? join('',@{$string_ref}) : undef)};
 }
+
 sub init_acyclic_iterator {
   my $self = shift;
   my %dflabel = (); 

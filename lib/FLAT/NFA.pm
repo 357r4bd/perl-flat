@@ -176,7 +176,6 @@ sub epsilon_closure {
     keys %seen;
 }
 
-
 sub contains {
     my ($self, $string) = @_;
 
@@ -312,7 +311,6 @@ sub as_digraph {
     }
     return sprintf("%s\n%s",($#states+1),join("\n",@lines));
 }
-
 
 # Graph Description Language, aiSee, etc
 sub as_gdl {
