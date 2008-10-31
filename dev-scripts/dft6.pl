@@ -7,7 +7,7 @@ use Data::Dumper;
 use Storable qw(dclone);
 
 my $dfa = FLAT::Regex::WithExtraOps->new($ARGV[0])->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
-my $MAXLEVEL = $ARGV[1];
+my $MAXLEVEL = 1;
 
 sub get_sub {
   my ($start,$nodelist_ref,$dflabel_ref,$string_ref,$accepting_ref,$lastDFLabel,$max) = @_;
@@ -36,6 +36,10 @@ sub init {
   my $lastDFLabel = 0; 
   my %nodelist = $dfa->as_node_list(); 
   my %dflabel = (); 
+  my %backtracked = (); # tracks nodes from which we've backtracked for cross edge detection
+  my %taintpoints = (); # tracks taint points
+  my %kgroups = (); # strong components + nodes reachable via them
+  my %crossedges = (); # tracks cross edges to check 
   foreach my $node (keys(%nodelist)) {
     $dflabel{$node} = []; # initializes anonymous arrays for all nodes
   }
