@@ -1,4 +1,6 @@
 package FLAT;
+use strict;
+use warnings;
 use FLAT::Regex;
 use FLAT::NFA;
 use FLAT::DFA;
@@ -28,38 +30,45 @@ additional methods that are outlined in the repsective POD pages.
 ## they can override these with more efficient versions if they like.
 
 sub as_dfa {
-    $_[0]->as_nfa->as_dfa;
+    my @params = @_;
+    return $params[0]->as_nfa->as_dfa;
 }
 
 sub as_min_dfa {
-    $_[0]->as_dfa->as_min_dfa;
+    my @params = @_;
+    return $params[0]->as_dfa->as_min_dfa;
 }
 
 sub is_infinite {
-    ! $_[0]->is_finite;
+    my @params = @_;
+    return ! $params[0]->is_finite;
 }
 
 sub star {
-    $_[0]->kleene
+    my @params = @_;
+    return $params[0]->kleene
 }
 
 sub difference {
-    $_[0]->intersect( $_[1]->complement );
+    my @params = @_;
+    return $params[0]->intersect( $params[1]->complement );
 }
 
 sub symdiff {
     my $self = shift;
     return $self if not @_;
     my $next = shift()->symdiff(@_);
-    ( $self->difference($next) )->union( $next->difference($self) );
+    return ( $self->difference($next) )->union( $next->difference($self) );
 }
 
 sub equals {
-    $_[0]->symdiff($_[1])->is_empty
+    my @params = @_;
+    return $params[0]->symdiff($params[1])->is_empty
 }
 
 sub is_subset_of {
-    $_[0]->difference($_[1])->is_empty
+    my @params = @_;
+    return $params[0]->difference($params[1])->is_empty
 }
 
 BEGIN {
