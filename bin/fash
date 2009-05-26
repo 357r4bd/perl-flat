@@ -21,6 +21,12 @@ showhelp()
   echo "    dump \"regular_expression\""
   echo "        Perl dump parse tree of given regex."
   echo ""
+  echo "    dfa2jflap \"regular_expression\""
+  echo "        Dumps out FA in FLAT input format; useful for visualizing and manipulating FA"
+  echo ""
+  echo "    nfa2jflap \"regular_expression\""
+  echo "        Dumps out FA in FLAT input format; useful for visualizing and manipulating FA"
+  echo ""
   echo "    dfa2gv \"regular_expression\""
   echo "        Dumps out FA in graphviz input format; useful for visualizing FA"
   echo ""
@@ -92,6 +98,8 @@ fi
 
 case "${1}" in
   dump)           perl -MFLAT::CMD -e "dump(\"${2}\")" ;;
+  dfa2jflap)      perl -MFLAT::CMD -e "dfa2jflap(\"${2}\")" ;;
+  nfa2jflap)      perl -MFLAT::CMD -e "nfa2jflap(\"${2}\")" ;;
   dfa2gv)         perl -MFLAT::CMD -e "dfa2gv(\"${2}\")" ;;
   nfa2gv)         perl -MFLAT::CMD -e "nfa2gv(\"${2}\")" ;;
   pfa2gv)         perl -MFLAT::CMD -e "pfa2gv(\"${2}\")" ;;

@@ -28,7 +28,7 @@ additional methods that are outlined in the repsective POD pages.
 use base 'Exporter'; #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
 
-@EXPORT = qw(compare dump dfa2gv nfa2gv pfa2gv dfa2undgv nfa2undgv pfa2undgv dfa2digraph
+@EXPORT = qw(compare dump dfa2jflap nfa2jflap dfa2gv nfa2gv pfa2gv dfa2undgv nfa2undgv pfa2undgv dfa2digraph
 	     nfa2digraph pfa2digraph dfa2undirected nfa2undirected pfa2undirected random_pre random_re
              savedfa test help
 	     );
@@ -61,9 +61,11 @@ __________             .__    ___________.____         ___________
   business.
 
 %perl -MFLAT::CMD -e
-    "somestrings" 're1'       # creates all valid strings via acyclic path, no cycles yet
+    "somestrings" 're1'      # creates all valid strings via acyclic path, no cycles yet
     "compare  're1','re2'"   # comares 2 regexs | see note [2] 
     "dump     're1'"         # dumps parse trees | see note[1]	   
+    "dfa2jflap  're1'"       # dumps JFLAT XML desc | see note[1]
+    "nfa2jflap  're1'"       # dumps JFLAT XML desc | see note[1]  
     "dfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
     "nfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
     "pfa2gv  're1'"          # dumps graphviz digraph desc | see note[1]  
@@ -185,9 +187,49 @@ sub dump {
   }
 }
 
+# dumps jflap XML notation
+# Usage:
+# perl -MFLAT -e "dfa2jflap('a&b&c&d*e*')"
+sub dfa2jflap {
+  use FLAT::Regex::WithExtraOps;
+  use FLAT::DFA;
+  use FLAT::NFA;
+  use FLAT::PFA;
+  if (@_)
+  { foreach (@_)
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
+      print $FA->as_jflap;} }
+  else
+  { while (<STDIN>)
+     { chomp;
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
+       print $FA->as_jflap;}
+  }
+}
+
+# dumps jflap XML notation
+# Usage:
+# perl -MFLAT -e "nfa2jflap('a&b&c&d*e*')"
+sub nfa2jflap {
+  use FLAT::Regex::WithExtraOps;
+  use FLAT::DFA;
+  use FLAT::NFA;
+  use FLAT::PFA;
+  if (@_)
+  { foreach (@_)
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+      print $FA->as_jflap;} }
+  else
+  { while (<STDIN>)
+     { chomp;
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+       print $FA->as_jflap;}
+  }
+}
+
 # dumps graphviz notation
 # Usage:
-# perl -MFLAT -e "dfa2gv('a&b&c&d*e*')"
+# perl -MFLAT -e "nfa2jflap('a&b&c&d*e*')"
 sub dfa2gv {
   use FLAT::Regex::WithExtraOps;
   use FLAT::DFA;
@@ -195,13 +237,13 @@ sub dfa2gv {
   use FLAT::PFA;  
   if (@_) 
   { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
-      print $FA->as_graphviz;} }
+    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+      print $FA->as_jflap;} }
   else    
   { while (<STDIN>) 
      { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
-       print $FA->as_graphviz;} 
+       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+       print $FA->as_jflap;}
   }
 }
 

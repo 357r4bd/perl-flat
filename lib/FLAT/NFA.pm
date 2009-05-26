@@ -338,6 +338,40 @@ sub as_gdl {
         join("", @trans);
 }
 
+# JFLAP, for importing into it
+sub as_jflap {
+    my $self = shift;
+    my $XMLstart =<<END;
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with Perl-FLAT-->
+<structure>
+  <type>fa</type>
+  <automaton>
+END
+    my $XMLend=<<END;
+  </automaton>
+</structure>
+END
+    my @states = map {
+        sprintf(qq{\n     <state id="%s" name="%s">\n%s%s    </state>\n},
+            $_,$_,
+            ($self->is_starting($_)  ? "      <initial/>\n" : ''),
+            ($self->is_accepting($_) ? "      <final/>\n" : ''))
+    } $self->get_states;
+    my @trans;
+    for my $s1 ($self->get_states) {
+    for my $s2 ($self->get_states) {
+        my $t = $self->get_transition($s1, $s2);
+        if (defined $t) {
+            my $label = $t->as_string;
+            $label = ($label eq 'epsilon') ? '<read/>' : sprintf("<read>%s</read>",$label);
+            push @trans, sprintf("\n    <transition>\n      <from>%s</from>\n      <to>%s</to>\n      %s\n    </transition>\n",$s1, $s2, $label);
+        }
+    }}
+
+    return sprintf("%s\n\n%s\n%s%s\n",$XMLstart,join("", @states),join("", @trans),$XMLend);
+}
+
+
 # Graphviz: dot, etc
 ## digraph, directed
 sub as_graphviz {
@@ -391,6 +425,8 @@ sub as_undirected_graphviz {
         join("", @states),
         join("", @trans);
 }
+
+#### end formatted output section - probably deserves its own module
 
 sub _SET_ID { return join "\0", sort { $a <=> $b } @_; }
 
