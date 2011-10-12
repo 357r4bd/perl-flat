@@ -1,4 +1,23 @@
-0. implement random string iterative string gen by choosing random sub refs 
-   in the call stack to follow
-1. XFA (making progress, may even be "there")
-2. xDFA->RE
+Last update: 12 October 2011
+
+0. implement random string iterative string gen by choosing random sub refs in the call stack to follow
+
+	This should be easy enough; just shuffle the stack used to implement current string generation;
+
+1. hyper-minimization (my algorithm, lookat n log n though)
+
+	Draft implementation in scripts directory; just need to implent it using DFA objects as the digraphs;
+
+2. XFA (making progress, may even be "there")
+
+	Rethink this; would like to use FLaT + CGI::Application to do something interesting with defining
+	an App as an FSM with transitions and state;
+
+3. xDFA->RE
+	
+ 	Implement gNFA approach; deal with the size of the generated RE somehow - maybe through some heuristic
+	during and after the method; maybe by rethinking the gNFA entirely.
+
+4. symbolic minimization (or shrinking) via some symbolic or heuristical methods.
+		
+5. work to make the whole library suitable for learning automata 
