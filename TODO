@@ -18,6 +18,10 @@ Last update: 12 October 2011
  	Implement gNFA approach; deal with the size of the generated RE somehow - maybe through some heuristic
 	during and after the method; maybe by rethinking the gNFA entirely.
 
+	http://www.cs.uiuc.edu/class/sp09/cs373/lectures/lect_08.pdf
+
 4. symbolic minimization (or shrinking) via some symbolic or heuristical methods.
+
+6. implement some of the closed form shuffle formulas
 		
-5. work to make the whole library suitable for learning automata 
+7. work to make the whole library suitable for learning automata 
