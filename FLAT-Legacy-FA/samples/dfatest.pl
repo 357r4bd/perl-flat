@@ -18,30 +18,31 @@ use DFA;
 
 my $string = undef;
 while (<>) {
-  $string .= $_;
+    $string .= $_;
 }
 
-$/++; # slurp mode, i.e., read in all of __DATA__ at once
-my @test = split("\n",<DATA>);
+$/++;    # slurp mode, i.e., read in all of __DATA__ at once
+my @test = split("\n", <DATA>);
 
 my $nfa1 = NFA->new();
 $nfa1->load_string($string);
 my $dfa1 = $nfa1->to_dfa();
 print STDERR $dfa1->info();
-my $dfa2 = $dfa1->clone();
+my $dfa2    = $dfa1->clone();
 my @removed = $dfa2->minimize();
-if (@removed) {print ($#removed+1)." removed\n";};
+if (@removed) {print($#removed+ 1) . " removed\n";}
 print STDERR $dfa2->info();
 my $c = 0;
+
 foreach (@test) {
-  $c++;
-  chomp;
-  if ($dfa1->is_valid($_)) {
-    print STDERR "(Normal DFA)       Line $c: $_ \n";
-  }
-  if ($dfa2->is_valid($_)) {
-    print STDERR "(Optimized DFA)    Line $c: $_ \n";
-  }
+    $c++;
+    chomp;
+    if ($dfa1->is_valid($_)) {
+        print STDERR "(Normal DFA)       Line $c: $_ \n";
+    }
+    if ($dfa2->is_valid($_)) {
+        print STDERR "(Optimized DFA)    Line $c: $_ \n";
+    }
 }
 
 __DATA__

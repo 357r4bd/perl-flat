@@ -9,21 +9,21 @@ use FLAT::Regex::Op;
 my $PARSER = FLAT::Regex::Parser->new(qw[ alt concat star ]);
 #### TODO: error checking in the parse
 
-sub _parser { $PARSER }
+sub _parser {$PARSER}
 
 sub new {
     my ($pkg, $string) = @_;
     my $result = $pkg->_parser->parse($string)
         or croak qq[``$string'' is not a valid regular expression];
 
-    $pkg->_from_op( $result );
+    $pkg->_from_op($result);
 }
 
 sub _from_op {
     my ($proto, $op) = @_;
-    $proto = ref $proto || $proto; ## I really do want this
-    
-    bless [ $op ], $proto;
+    $proto = ref $proto || $proto;    ## I really do want this
+
+    bless [$op], $proto;
 }
 
 sub op {
@@ -31,13 +31,14 @@ sub op {
 }
 
 use overload '""' => 'as_string';
+
 sub as_string {
     $_[0]->op->as_string(0);
 }
 
 sub as_perl_regex {
     my ($self, %opts) = @_;
-    
+
     my $fmt = $opts{anchored} ? '(?:\A%s\z)' : '(?:%s)';
     return sprintf $fmt, $self->op->as_perl_regex(0);
 }
@@ -64,12 +65,12 @@ sub as_regex {
 
 sub union {
     my $self = $_[0];
-    my $op   = FLAT::Regex::Op::alt->new( map { $_->as_regex->op } @_ );
+    my $op = FLAT::Regex::Op::alt->new(map {$_->as_regex->op} @_);
     $self->_from_op($op);
 }
 
 sub intersect {
-    my @dfas = map { $_->as_dfa } @_;
+    my @dfas = map {$_->as_dfa} @_;
     my $self = shift @dfas;
     $self->intersect(@dfas)->as_regex;
 }
@@ -81,13 +82,13 @@ sub complement {
 
 sub concat {
     my $self = $_[0];
-    my $op = FLAT::Regex::Op::concat->new( map { $_->as_regex->op } @_ );
+    my $op = FLAT::Regex::Op::concat->new(map {$_->as_regex->op} @_);
     $self->_from_op($op);
 }
 
 sub kleene {
     my $self = shift;
-    my $op   = FLAT::Regex::Op::star->new( $self->op );
+    my $op   = FLAT::Regex::Op::star->new($self->op);
     $self->_from_op($op);
 }
 

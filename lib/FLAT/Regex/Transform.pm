@@ -1,12 +1,12 @@
 package FLAT::Regex::Transform;
 
-# Extends FLAT::Regex::WithExtraOps with PRegex transformations 
+# Extends FLAT::Regex::WithExtraOps with PRegex transformations
 # (i.e., reductions based on: w*v & a*b
 
 use base 'FLAT::Regex::WithExtraOps';
 
 sub new {
-    my $pkg = shift;
+    my $pkg  = shift;
     my $self = $pkg->SUPER::new(@_);
     return $self;
 }

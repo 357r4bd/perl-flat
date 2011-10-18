@@ -5,12 +5,17 @@ use warnings;
 {
     my %seen;
     my %tree = (
-        A => ['B', 'C'], B => ['D', 'E'], C => ['F', 'G'],
-        E => ['H', 'I'], G => ['J', 'K'], H => ['L', 'M', 'N'],
-        I => ['O', 'P'], K => ['Q'],   
+        A => ['B', 'C'],
+        B => ['D', 'E'],
+        C => ['F', 'G'],
+        E => ['H', 'I'],
+        G => ['J', 'K'],
+        H => ['L', 'M', 'N'],
+        I => ['O', 'P'],
+        K => ['Q'],
     );
 
-    sub get_root { 'A' }
+    sub get_root {'A'}
 
     sub get_children {
         my ($node) = @_;
@@ -29,7 +34,7 @@ sub gen_tree_iter {
     return sub {
         {
             my $node = shift @nodes;
-            return undef if ! defined $node;
+            return undef if !defined $node;
             redo if visited($node);
             visited($node => 1);
             unshift @nodes, get_children($node);

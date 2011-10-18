@@ -41,7 +41,7 @@ sub as_min_dfa {
 
 sub is_infinite {
     my @params = @_;
-    return ! $params[0]->is_finite;
+    return !$params[0]->is_finite;
 }
 
 sub star {
@@ -51,14 +51,14 @@ sub star {
 
 sub difference {
     my @params = @_;
-    return $params[0]->intersect( $params[1]->complement );
+    return $params[0]->intersect($params[1]->complement);
 }
 
 sub symdiff {
     my $self = shift;
     return $self if not @_;
     my $next = shift()->symdiff(@_);
-    return ( $self->difference($next) )->union( $next->difference($self) );
+    return ($self->difference($next))->union($next->difference($self));
 }
 
 sub equals {
@@ -72,9 +72,10 @@ sub is_subset_of {
 }
 
 BEGIN {
-    for my $method (qw[ as_nfa as_regex union intersect complement concat
-                        kleene reverse is_empty is_finite ])
-    {
+    for my $method (
+        qw[ as_nfa as_regex union intersect complement concat
+        kleene reverse is_empty is_finite ]
+        ) {
         no strict 'refs';
         *$method = sub {
             my $pkg = ref $_[0] || $_[0];

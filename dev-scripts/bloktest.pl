@@ -12,7 +12,6 @@ sub foo {
     FLAT::Regex->new(shift)->as_min_dfa;
 }
 
-
 my $dfa1 = foo("((a+b)(a+b))*");
 my $dfa2 = foo("a*");
 

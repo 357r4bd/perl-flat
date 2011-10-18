@@ -12,32 +12,34 @@ $CHAR = qr{ [A-Za-z0-9_\$\#] | \[[^\]]*\] }x;
 
 sub new {
     my $pkg = shift;
-    my @ops = sort { $a->{prec} <=> $b->{prec} }
-              map {{
-                  pkg   => "FLAT::Regex::Op::$_",
-                  prec  => "FLAT::Regex::Op::$_"->precedence,
-                  spec  => "FLAT::Regex::Op::$_"->parse_spec,
-                  short => $_
-              }} @_;
+    my @ops = sort {$a->{prec} <=> $b->{prec}}
+        map {
+        {
+            pkg   => "FLAT::Regex::Op::$_",
+            prec  => "FLAT::Regex::Op::$_"->precedence,
+            spec  => "FLAT::Regex::Op::$_"->parse_spec,
+            short => $_
+        }
+        } @_;
 
-    my $lowest = shift @ops;
+    my $lowest  = shift @ops;
     my $grammar = qq!
             parse:
                 $lowest->{short} /^\\Z/ { \$item[1] }
     !;
-    
+
     my $prev = $lowest;
     for (@ops) {
         my $spec = sprintf $prev->{spec}, $_->{short};
-        
+
         $grammar .= qq!
             $prev->{short}:
                 $spec       { $prev->{pkg}\->from_parse(\@item) }
               | $_->{short} { \$item[1] }
         !;
-        
+
         $prev = $_;
-    }            
+    }
 
     my $spec = sprintf $prev->{spec}, "atomic";
     $grammar .= qq!
@@ -55,7 +57,6 @@ sub new {
 }
 
 1;
-
 
 __END__
 

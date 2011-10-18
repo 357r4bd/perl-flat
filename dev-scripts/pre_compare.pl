@@ -15,7 +15,8 @@ my $DFA1 = $PFA1->as_nfa->as_min_dfa;
 my $DFA2 = $PFA2->as_nfa->as_min_dfa;
 
 if ($DFA1->equals($DFA2)) {
-  print "MATCH!";
-} else {
-  print "No Match";
+    print "MATCH!";
+}
+else {
+    print "No Match";
 }

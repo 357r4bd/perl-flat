@@ -1,92 +1,57 @@
+BEGIN {
+    unshift @INC, '../lib';
+}
+
 #use Test::More tests => 48;
-use Test::More tests => 23; # need to add FLAT::Transition tests
+use Test::More tests => 23;    # need to add FLAT::Transition tests
 use FLAT;
 
 my $fa = FLAT::FA->new;
 
-is( ref $fa,
-    "FLAT::FA",
-    "blessed reference returned" );
+is(ref $fa, "FLAT::FA", "blessed reference returned");
 
-is_deeply(
-    [ $fa->get_states ],
-    [],
-    "initially no states" );
+is_deeply([$fa->get_states], [], "initially no states");
 
-is( $fa->num_states,
-    0,
-    "initially no states" );
+is($fa->num_states, 0, "initially no states");
 
-ok( ! $fa->is_state(0),
-    "initially no states" );
+ok(!$fa->is_state(0), "initially no states");
 
 my @s = $fa->add_states(5);
-is( scalar(@s),
-    5,
-    "add_states returns list" );
+is(scalar(@s), 5, "add_states returns list");
 
-is( $fa->num_states,
-    5,
-    "add_states adds states" );
+is($fa->num_states, 5, "add_states adds states");
 
-is_deeply(
-    [ sort $fa->get_states ],
-    [ sort @s ],
-    "add_states add states" );
+is_deeply([sort $fa->get_states], [sort @s], "add_states add states");
 
 for (@s) {
-    ok( $fa->is_state($_),
-        "add_states returns valid states" );
+    ok($fa->is_state($_), "add_states returns valid states");
 }
 
 my $del = pop @s;
 $fa->delete_states($del);
 
-is( $fa->num_states,
-    4,
-    "delete_states deletes states" );
+is($fa->num_states, 4, "delete_states deletes states");
 
-is_deeply(
-    [ sort $fa->get_states ],
-    [ sort @s ],
-    "delete_states deletes states" );
+is_deeply([sort $fa->get_states], [sort @s], "delete_states deletes states");
 
-ok( ! $fa->is_state($del),
-    "delete_states delete states" );
+ok(!$fa->is_state($del), "delete_states delete states");
 
-is_deeply(
-    [ $fa->get_accepting ],
-    [],
-    "initially no accepting states" );
+is_deeply([$fa->get_accepting], [], "initially no accepting states");
 
-is_deeply(
-    [ $fa->get_starting ],
-    [],
-    "initially no starting states" );
+is_deeply([$fa->get_starting], [], "initially no starting states");
 
+$fa->set_accepting(@s[0, 1, 2]);
+$fa->set_starting(@s[2, 3]);
 
-$fa->set_accepting(@s[0,1,2]);
-$fa->set_starting(@s[2,3]);
+is_deeply([sort $fa->get_accepting], [sort @s[0, 1, 2]], "set_accepting sets accepting");
 
-is_deeply(
-    [ sort $fa->get_accepting ],
-    [ sort @s[0,1,2] ],
-    "set_accepting sets accepting" );
+is_deeply([sort $fa->get_starting], [sort @s[2, 3]], "set_starting sets starting");
 
-is_deeply(
-    [ sort $fa->get_starting ],
-    [ sort @s[2,3] ],
-    "set_starting sets starting" );
+ok($fa->is_starting($s[2]),  "set_starting sets starting");
+ok(!$fa->is_starting($s[1]), "set_starting leaves others");
 
-ok( $fa->is_starting( $s[2] ),
-    "set_starting sets starting" );
-ok( ! $fa->is_starting( $s[1] ),
-    "set_starting leaves others" );
-
-ok( $fa->is_accepting( $s[2] ),
-    "set_accepting sets accepting" );
-ok( ! $fa->is_accepting( $s[3] ),
-    "set_accepting leaves others" );
+ok($fa->is_accepting($s[2]),  "set_accepting sets accepting");
+ok(!$fa->is_accepting($s[3]), "set_accepting leaves others");
 
 __END__
 

@@ -15,7 +15,7 @@ zmy $summary = $nfa->as_summary;
 print "$summary\n";
 
 open my $fh, "|-", "dot -Tpng -o output.png"
-   or die "Couldn't run dot: $!\n";
+    or die "Couldn't run dot: $!\n";
 
 print $fh $dot;
 close $fh;

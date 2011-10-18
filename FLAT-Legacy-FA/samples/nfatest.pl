@@ -18,11 +18,11 @@ use DFA;
 
 my $string = undef;
 while (<>) {
-  $string .= $_;
+    $string .= $_;
 }
 
-$/++; # slurp mode, i.e., read in all of __DATA__ at once
-my @test = split("\n",<DATA>);
+$/++;    # slurp mode, i.e., read in all of __DATA__ at once
+my @test = split("\n", <DATA>);
 
 my $nfa1 = NFA->new();
 $nfa1->load_string($string);
@@ -35,13 +35,13 @@ print STDERR $nfa1->info();
 exit;
 
 my $dfa1 = $nfa1->to_dfa();
-my $c = 0;
+my $c    = 0;
 foreach (@test) {
-  $c++;
-  chomp;
-  if ($dfa1->is_valid($_)) {
-    print STDERR "Line $c: $_ \n";
-  }
+    $c++;
+    chomp;
+    if ($dfa1->is_valid($_)) {
+        print STDERR "Line $c: $_ \n";
+    }
 }
 print STDERR "########################\n\n";
 

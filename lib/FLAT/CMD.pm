@@ -25,26 +25,26 @@ additional methods that are outlined in the repsective POD pages.
 =cut
 
 # Support for perl one liners - like what CPAN.pm uses #<- should move all to another file
-use base 'Exporter'; #instead of: use Exporter (); @ISA = 'Exporter';
+use base 'Exporter';    #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
 
 @EXPORT = qw(compare dump dfa2jflap nfa2jflap dfa2gv nfa2gv pfa2gv dfa2undgv nfa2undgv pfa2undgv dfa2digraph
-	     nfa2digraph pfa2digraph dfa2undirected nfa2undirected pfa2undirected random_pre random_re
-             savedfa test help
-	     );
+    nfa2digraph pfa2digraph dfa2undirected nfa2undirected pfa2undirected random_pre random_re
+    savedfa test help
+);
 
 sub AUTOLOAD {
-    my($l) = $AUTOLOAD;
+    my ($l) = $AUTOLOAD;
     $l =~ s/.*:://;
-    my(%EXPORT);
+    my (%EXPORT);
     @EXPORT{@EXPORT} = '';
-    if (exists $EXPORT{$l}){
-	FLAT::CMD->$l(@_);
+    if (exists $EXPORT{$l}) {
+        FLAT::CMD->$l(@_);
     }
 }
 
 sub help {
-print <<END
+    print <<END
 __________             .__    ___________.____         ___________
 \______   \ ___________|  |   \_   _____/|    |   _____\__    ___/
  |     ___// __ \_  __ \  |    |    __)  |    |   \__  \ |    |   
@@ -117,12 +117,12 @@ sub savedfa {
     my $PRE = shift;
     # neat a better way to get input via stdin
     if (!$PRE) {
-      while (<>) {
-        chomp;
-        $PRE = $_;
-        last;
-      }
-    } 
+        while (<>) {
+            chomp;
+            $PRE = $_;
+            last;
+        }
+    }
     use FLAT::Regex::WithExtraOps;
     use FLAT::PFA;
     use FLAT::NFA;
@@ -137,35 +137,39 @@ sub savedfa {
 # Usage:
 # perl -MFLAT -e "pfa2directed('a&b&c&d*e*')"
 sub test {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::PFA;
-  use FLAT::NFA;
-  use FLAT::DFA;
-  # handles multiple strings; first is considered the regex
-  if (@_) 
-  { my $FA = FLAT::Regex::WithExtraOps->new(shift @_)->as_pfa()->as_nfa->as_dfa(); 
-    foreach (@_)
-    { if ($FA->is_valid_string($_)) {
-        print "(+): $_\n";
-      } else {
-        print "(-): $_\n";
-      }     
-    } 
-  } else {
-    my $FA;
-    while (<STDIN>) {
-      chomp;
-      if ($. == 1) { #<-- uses first line as regex!
-        $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa->as_dfa();
-      } else {
-	if ($FA->is_valid_string($_)) {
-	  print "(+): $_\n";
-        } else {
-	  print "(-): $_\n";
-	}      
-      }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::PFA;
+    use FLAT::NFA;
+    use FLAT::DFA;
+    # handles multiple strings; first is considered the regex
+    if (@_) {
+        my $FA = FLAT::Regex::WithExtraOps->new(shift @_)->as_pfa()->as_nfa->as_dfa();
+        foreach (@_) {
+            if ($FA->is_valid_string($_)) {
+                print "(+): $_\n";
+            }
+            else {
+                print "(-): $_\n";
+            }
+        }
     }
-  }
+    else {
+        my $FA;
+        while (<STDIN>) {
+            chomp;
+            if ($. == 1) {    #<-- uses first line as regex!
+                $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa->as_dfa();
+            }
+            else {
+                if ($FA->is_valid_string($_)) {
+                    print "(+): $_\n";
+                }
+                else {
+                    print "(-): $_\n";
+                }
+            }
+        }
+    }
 }
 
 # dumps parse tree
@@ -173,116 +177,134 @@ sub test {
 # perl -MFLAT -e "dump('re1','re2',...,'reN')"
 # perl -MFLAT -e dump < list_of_regexes.dat
 sub dump {
-  use FLAT::Regex::WithExtraOps;
-  use Data::Dumper;
-  if (@_) 
-  { foreach (@_)
-    { my $PRE = FLAT::Regex::WithExtraOps->new($_);
-      print Dumper($PRE); }} 
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $PRE = FLAT::Regex::WithExtraOps->new($_);
-       print Dumper($PRE); }
-  }
+    use FLAT::Regex::WithExtraOps;
+    use Data::Dumper;
+    if (@_) {
+        foreach (@_) {
+            my $PRE = FLAT::Regex::WithExtraOps->new($_);
+            print Dumper($PRE);
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $PRE = FLAT::Regex::WithExtraOps->new($_);
+            print Dumper($PRE);
+        }
+    }
 }
 
 # dumps jflap XML notation
 # Usage:
 # perl -MFLAT -e "dfa2jflap('a&b&c&d*e*')"
 sub dfa2jflap {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;
-  if (@_)
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
-      print $FA->as_jflap;} }
-  else
-  { while (<STDIN>)
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
-       print $FA->as_jflap;}
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
+            print $FA->as_jflap;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
+            print $FA->as_jflap;
+        }
+    }
 }
 
 # dumps jflap XML notation
 # Usage:
 # perl -MFLAT -e "nfa2jflap('a&b&c&d*e*')"
 sub nfa2jflap {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;
-  if (@_)
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-      print $FA->as_jflap;} }
-  else
-  { while (<STDIN>)
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-       print $FA->as_jflap;}
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_jflap;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_jflap;
+        }
+    }
 }
 
 # dumps graphviz notation
 # Usage:
 # perl -MFLAT -e "nfa2jflap('a&b&c&d*e*')"
 sub dfa2gv {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;  
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-      print $FA->as_jflap;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-       print $FA->as_jflap;}
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_jflap;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_jflap;
+        }
+    }
 }
 
 # dumps graphviz notation
 # Usage:
 # perl -MFLAT -e "nfa2gv('a&b&c&d*e*')"
 sub nfa2gv {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;  
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-      print $FA->as_graphviz;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-       print $FA->as_graphviz;} 
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_graphviz;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_graphviz;
+        }
+    }
 }
 
 # dumps graphviz notation
 # Usage:
 # perl -MFLAT -e "pfa2gv('a&b&c&d*e*')"
 sub pfa2gv {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::PFA;
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
-      print $FA->as_graphviz;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
-       print $FA->as_graphviz;} 
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+            print $FA->as_graphviz;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+            print $FA->as_graphviz;
+        }
+    }
 }
 
 #as_undirected_graphviz
@@ -291,267 +313,298 @@ sub pfa2gv {
 # Usage:
 # perl -MFLAT -e "dfa2undgv('a&b&c&d*e*')"
 sub dfa2undgv {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;  
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
-      print $FA->as_undirected_graphviz;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
-       print $FA->as_undirected_graphviz;} 
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa()->as_min_dfa()->trim_sinks();
+            print $FA->as_undirected_graphviz;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa()->trim_sinks();
+            print $FA->as_undirected_graphviz;
+        }
+    }
 }
 
 # dumps graphviz notation
 # Usage:
 # perl -MFLAT -e "nfa2undgv('a&b&c&d*e*')"
 sub nfa2undgv {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;  
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-      print $FA->as_undirected_graphviz;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-       print $FA->as_undirected_graphviz;} 
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_undirected_graphviz;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_undirected_graphviz;
+        }
+    }
 }
 
 # dumps graphviz notation
 # Usage:
 # perl -MFLAT -e "pfa2undgv('a&b&c&d*e*')"
 sub pfa2undgv {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::PFA;
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
-      print $FA->as_undirected_graphviz;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
-       print $FA->as_undirected_graphviz;} 
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+            print $FA->as_undirected_graphviz;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+            print $FA->as_undirected_graphviz;
+        }
+    }
 }
 
 # dumps directed graph using Kundu notation
 # Usage:
 # perl -MFLAT -e "dfa2directed('a&b&c&d*e*')"
 sub dfa2digraph {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;  
-  # trims sink states from min-dfa since transitions are gone 
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks(); 
-       print $FA->as_digraph;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks();
-       print $FA->as_digraph;} 
-  }
-  print "\n";
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    # trims sink states from min-dfa since transitions are gone
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks();
+            print $FA->as_digraph;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks();
+            print $FA->as_digraph;
+        }
+    }
+    print "\n";
 }
 
 # dumps directed graph using Kundu notation
 # Usage:
 # perl -MFLAT -e "nfa2directed('a&b&c&d*e*')"
 sub nfa2digraph {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;  
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa(); 
-       print $FA->as_digraph;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-       print $FA->as_digraph;} 
-  }
-  print "\n";
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_digraph;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_digraph;
+        }
+    }
+    print "\n";
 }
 
 # dumps directed graph using Kundu notation
 # Usage:
 # perl -MFLAT -e "pfa2directed('a&b&c&d*e*')"
 sub pfa2digraph {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::PFA;
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa(); 
-       print $FA->as_digraph;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
-       print $FA->as_digraph;} 
-  }
-  print "\n";
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+            print $FA->as_digraph;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+            print $FA->as_digraph;
+        }
+    }
+    print "\n";
 }
 
 # dumps undirected graph using Kundu notation
 # Usage:
 # perl -MFLAT -e "dfa2undirected('a&b&c&d*e*')"
 sub dfa2undirected {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;  
-  # trims sink states from min-dfa since transitions are gone 
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks(); 
-       print $FA->as_undirected;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks();
-       print $FA->as_undirected;} 
-  }
-  print "\n";
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    # trims sink states from min-dfa since transitions are gone
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks();
+            print $FA->as_undirected;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa()->as_dfa->as_min_dfa->trim_sinks();
+            print $FA->as_undirected;
+        }
+    }
+    print "\n";
 }
 
 # dumps undirected graph using Kundu notation
 # Usage:
 # perl -MFLAT -e "nfa2undirected('a&b&c&d*e*')"
 sub nfa2undirected {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::NFA;
-  use FLAT::PFA;  
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa(); 
-       print $FA->as_undirected;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
-       print $FA->as_undirected;} 
-  }
-  print "\n";
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::NFA;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_undirected;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa()->as_nfa();
+            print $FA->as_undirected;
+        }
+    }
+    print "\n";
 }
 
 # dumps undirected graph using Kundu notation
 # Usage:
 # perl -MFLAT -e "pfa2undirected('a&b&c&d*e*')"
 sub pfa2undirected {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::PFA;
-  if (@_) 
-  { foreach (@_)
-    { my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa(); 
-       print $FA->as_undirected;} }
-  else    
-  { while (<STDIN>) 
-     { chomp;
-       my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
-       print $FA->as_undirected;} 
-  }
-  print "\n";
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::PFA;
+    if (@_) {
+        foreach (@_) {
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+            print $FA->as_undirected;
+        }
+    }
+    else {
+        while (<STDIN>) {
+            chomp;
+            my $FA = FLAT::Regex::WithExtraOps->new($_)->as_pfa();
+            print $FA->as_undirected;
+        }
+    }
+    print "\n";
 }
 
 # compares 2 give PREs
 # Usage:
 # perl -MFLAT -e "compare('a','a&b&c&d*e*')" #<-- no match, btw
 sub compare {
-  use FLAT::Regex::WithExtraOps;
-  use FLAT::DFA;
-  use FLAT::PFA;
-  my $PFA1 = FLAT::Regex::WithExtraOps->new(shift)->as_pfa();
-  my $PFA2 = FLAT::Regex::WithExtraOps->new(shift)->as_pfa();
-  my $DFA1 = $PFA1->as_nfa->as_min_dfa;
-  my $DFA2 = $PFA2->as_nfa->as_min_dfa;
-  if ($DFA1->equals($DFA2)) {
-    print "Yes\n";
-  } else {
-    print "No\n";
-  }
+    use FLAT::Regex::WithExtraOps;
+    use FLAT::DFA;
+    use FLAT::PFA;
+    my $PFA1 = FLAT::Regex::WithExtraOps->new(shift)->as_pfa();
+    my $PFA2 = FLAT::Regex::WithExtraOps->new(shift)->as_pfa();
+    my $DFA1 = $PFA1->as_nfa->as_min_dfa;
+    my $DFA2 = $PFA2->as_nfa->as_min_dfa;
+    if ($DFA1->equals($DFA2)) {
+        print "Yes\n";
+    }
+    else {
+        print "No\n";
+    }
 }
 
 # prints random PRE
 # Usage:
 # perl -MFLAT -e random_pre
 sub random_pre {
-  my $and_chance = shift;
-  # skirt around deep recursion warning annoyance
-  local $SIG{__WARN__} = sub { $_[0] =~ /^Deep recursion/ or warn $_[0] };
-  srand $$;
-  my %CMDLINEOPTS = ();
-  # Percent chance of each operator occuring
-  $CMDLINEOPTS{LENGTH} = 32;
-  $CMDLINEOPTS{OR} = 6;
-  $CMDLINEOPTS{STAR} = 10;
-  $CMDLINEOPTS{OPEN} = 5;
-  $CMDLINEOPTS{CLOSE} = 0;
-  $CMDLINEOPTS{n} = 1;
-  $CMDLINEOPTS{AND} = 10; #<-- default    
-  $CMDLINEOPTS{AND} = $and_chance if ($and_chance == 0); #<-- to make it just an re (no shuffle)
-  
+    my $and_chance = shift;
+    # skirt around deep recursion warning annoyance
+    local $SIG{__WARN__} = sub {$_[0] =~ /^Deep recursion/ or warn $_[0]};
+    srand $$;
+    my %CMDLINEOPTS = ();
+    # Percent chance of each operator occuring
+    $CMDLINEOPTS{LENGTH} = 32;
+    $CMDLINEOPTS{OR}     = 6;
+    $CMDLINEOPTS{STAR}   = 10;
+    $CMDLINEOPTS{OPEN}   = 5;
+    $CMDLINEOPTS{CLOSE}  = 0;
+    $CMDLINEOPTS{n}      = 1;
+    $CMDLINEOPTS{AND}    = 10;                                   #<-- default
+    $CMDLINEOPTS{AND}    = $and_chance if ($and_chance == 0);    #<-- to make it just an re (no shuffle)
 
-  my $getRandomChar = sub {
-    my $ch = '';
-    # Get a random character between 0 and 127.
-    do {
-      $ch = int(rand 2);
-    } while ($ch !~ m/[a-zA-Z0-9]/);  
-    return $ch;
-  };
+    my $getRandomChar = sub {
+        my $ch = '';
+        # Get a random character between 0 and 127.
+        do {
+            $ch = int(rand 2);
+        } while ($ch !~ m/[a-zA-Z0-9]/);
+        return $ch;
+    };
 
-  my $getRandomRE = sub {
-    my $str = '';
-    my @closeparens = ();
-    for (1..$CMDLINEOPTS{LENGTH}) {
-      $str .= $getRandomChar->();  
-      # % chance of an "or"
-      if (int(rand 100) < $CMDLINEOPTS{OR}) {
-	$str .= "|1";
-      } elsif (int(rand 100) < $CMDLINEOPTS{AND}) {
-	$str .= "&0";
-      } elsif (int(rand 100) < $CMDLINEOPTS{STAR}) {
-	$str .= "*1";     
-      } elsif (int(rand 100) < $CMDLINEOPTS{OPEN}) {
-	$str .= "(";
-	push(@closeparens,'0101)');
-      } elsif (int(rand 100) < $CMDLINEOPTS{CLOSE} && @closeparens) {
-	$str .= pop(@closeparens);
-      }
+    my $getRandomRE = sub {
+        my $str         = '';
+        my @closeparens = ();
+        for (1 .. $CMDLINEOPTS{LENGTH}) {
+            $str .= $getRandomChar->();
+            # % chance of an "or"
+            if (int(rand 100) < $CMDLINEOPTS{OR}) {
+                $str .= "|1";
+            }
+            elsif (int(rand 100) < $CMDLINEOPTS{AND}) {
+                $str .= "&0";
+            }
+            elsif (int(rand 100) < $CMDLINEOPTS{STAR}) {
+                $str .= "*1";
+            }
+            elsif (int(rand 100) < $CMDLINEOPTS{OPEN}) {
+                $str .= "(";
+                push(@closeparens, '0101)');
+            }
+            elsif (int(rand 100) < $CMDLINEOPTS{CLOSE} && @closeparens) {
+                $str .= pop(@closeparens);
+            }
+        }
+        # empty out @closeparens if there are still some left
+        if (@closeparens) {
+            $str .= join('', @closeparens);
+        }
+        return $str;
+    };
+
+    for (1 .. $CMDLINEOPTS{n}) {
+        print $getRandomRE->(), "\n";
     }
-    # empty out @closeparens if there are still some left
-    if (@closeparens) {
-      $str .= join('',@closeparens);  
-    }
-    return $str;
-  };
-
-  for (1..$CMDLINEOPTS{n}) {
-    print $getRandomRE->(),"\n";  
-  } 
 }
 
 # prints random RE (no & operator)
 # Usage:
 # perl -MFLAT -e random_re
 sub random_re {
-  shift->random_pre(0);
+    shift->random_pre(0);
 }
 
 1;
