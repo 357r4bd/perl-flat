@@ -1,6 +1,6 @@
 package FLAT::Symbol::Regex;
 
-use base 'FLAT::Symbol';
+use parent 'FLAT::Symbol';
 use FLAT::Regex::WithExtraOps;
 
 use strict;

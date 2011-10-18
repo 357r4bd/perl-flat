@@ -1,7 +1,7 @@
 package FLAT::NFA;
 
 use strict;
-use base 'FLAT::FA';
+use parent 'FLAT::FA';
 
 use FLAT::Transition::Simple;
 use FLAT::Symbol::Regex;

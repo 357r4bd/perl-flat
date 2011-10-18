@@ -1,6 +1,6 @@
 package FLAT::Symbol::String;
 
-use base 'FLAT::Symbol';
+use parent 'FLAT::Symbol';
 
 use strict;
 

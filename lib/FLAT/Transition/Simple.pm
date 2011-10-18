@@ -1,6 +1,6 @@
 package FLAT::Transition::Simple;
 
-use base 'FLAT::Transition';
+use parent 'FLAT::Transition';
 
 use strict;
 use Carp;

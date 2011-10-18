@@ -1,7 +1,7 @@
 package FLAT::DFA;
 
 use strict;
-use base 'FLAT::NFA';
+use parent 'FLAT::NFA';
 use Storable qw(dclone);
 use Carp;
 $|++;

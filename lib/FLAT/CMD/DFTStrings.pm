@@ -1,7 +1,7 @@
 # all strings available via depth first traversal, including back edges that happen to land on an accepting state
 
 package FLAT::CMD::DFTStrings;
-use base 'FLAT::CMD';
+use parent 'FLAT::CMD';
 use FLAT;
 use FLAT::Regex::WithExtraOps;
 use FLAT::PFA;
@@ -11,7 +11,7 @@ use Storable;
 use Carp;
 
 # Support for perl one liners - like what CPAN.pm uses #<- should move all to another file
-use base 'Exporter';    #instead of: use Exporter (); @ISA = 'Exporter';
+use parent 'Exporter';    #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
 
 @EXPORT = qw(as_strings);

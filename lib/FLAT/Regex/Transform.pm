@@ -3,7 +3,7 @@ package FLAT::Regex::Transform;
 # Extends FLAT::Regex::WithExtraOps with PRegex transformations
 # (i.e., reductions based on: w*v & a*b
 
-use base 'FLAT::Regex::WithExtraOps';
+use parent 'FLAT::Regex::WithExtraOps';
 
 sub new {
     my $pkg  = shift;

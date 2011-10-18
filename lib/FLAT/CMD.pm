@@ -25,7 +25,7 @@ additional methods that are outlined in the repsective POD pages.
 =cut
 
 # Support for perl one liners - like what CPAN.pm uses #<- should move all to another file
-use base 'Exporter';    #instead of: use Exporter (); @ISA = 'Exporter';
+use parent 'Exporter';    #instead of: use Exporter (); @ISA = 'Exporter';
 use vars qw(@EXPORT $AUTOLOAD);
 
 @EXPORT = qw(compare dump dfa2jflap nfa2jflap dfa2gv nfa2gv pfa2gv dfa2undgv nfa2undgv pfa2undgv dfa2digraph

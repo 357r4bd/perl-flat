@@ -1,5 +1,5 @@
 package FLAT::Regex::Util;
-use base 'FLAT::Regex';
+use parent 'FLAT::Regex';
 
 use strict;
 use Carp;

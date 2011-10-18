@@ -1,6 +1,6 @@
 package FLAT::PFA;
 use strict;
-use base 'FLAT::NFA';
+use parent 'FLAT::NFA';
 use Carp;
 
 use FLAT::Transition;

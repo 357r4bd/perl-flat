@@ -1,0 +1,5 @@
+Clean up:
+
+* DFAs and PFAs are NFAs, so move their locations
+* Move string gen and validation stuff out of DFA.pm, maybe in a
+  "./Simulate.pm" parent class

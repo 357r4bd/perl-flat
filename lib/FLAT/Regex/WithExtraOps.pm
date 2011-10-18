@@ -1,5 +1,5 @@
 package FLAT::Regex::WithExtraOps;
-use base 'FLAT::Regex';
+use parent 'FLAT::Regex';
 
 use strict;
 use Carp;
@@ -29,7 +29,7 @@ sub shuffle {
 }
 
 package FLAT::Regex::Op::negate;
-use base "FLAT::Regex::Op";
+use parent "FLAT::Regex::Op";
 use Carp;
 
 sub parse_spec {"'~' %s";}
@@ -67,7 +67,7 @@ sub is_finite {
 
 ###############################
 package FLAT::Regex::Op::shuffle;
-use base 'FLAT::Regex::Op';
+use parent 'FLAT::Regex::Op';
 use Carp;
 
 sub parse_spec {"%s(2.. /[&]/)"}

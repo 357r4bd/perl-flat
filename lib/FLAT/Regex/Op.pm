@@ -18,7 +18,7 @@ sub members {
 #### regex operators / components
 
 package FLAT::Regex::Op::atomic;
-use base 'FLAT::Regex::Op';
+use parent 'FLAT::Regex::Op';
 
 sub as_string {
     my $t = $_[0]->members;
@@ -77,7 +77,7 @@ sub is_finite {
 
 ##############################
 package FLAT::Regex::Op::star;
-use base 'FLAT::Regex::Op';
+use parent 'FLAT::Regex::Op';
 
 sub parse_spec {"%s '*'"}
 sub precedence {30}
@@ -129,7 +129,7 @@ sub is_finite {
 
 ################################
 package FLAT::Regex::Op::concat;
-use base 'FLAT::Regex::Op';
+use parent 'FLAT::Regex::Op';
 
 sub parse_spec {"%s(2..)";}
 sub precedence {20}
@@ -203,7 +203,7 @@ sub is_finite {
 
 #############################
 package FLAT::Regex::Op::alt;
-use base 'FLAT::Regex::Op';
+use parent 'FLAT::Regex::Op';
 
 sub parse_spec {"%s(2.. /[+|]/)"}
 sub precedence {10}
