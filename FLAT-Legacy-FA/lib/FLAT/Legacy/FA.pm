@@ -2,7 +2,7 @@
 
 package FLAT::Legacy::FA;
 
-use base 'FLAT';
+use parent 'FLAT';
 use strict;
 use Carp;
 

@@ -1,4 +1,4 @@
-use 5.010;
+use 5.010001; #-- due to use of 'use parent'
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
