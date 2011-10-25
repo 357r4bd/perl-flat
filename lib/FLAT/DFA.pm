@@ -1,7 +1,9 @@
 package FLAT::DFA;
 
 use strict;
+use warnings;
 use parent 'FLAT::NFA';
+use FLAT::DFA::Util;
 use Storable qw(dclone);
 use Carp;
 $|++;
@@ -152,11 +154,7 @@ sub as_min_dfa {
     $result;
 }
 
-# Need to implement! http://www.ianab.com/hyper/
-# DFA hyper-minimization using equivalence classes
-sub as_hyper_min_dfa {
-    my $self = shift()->clone;
-}
+#-- moving stuff below to FLAT::DFA::Util
 
 # the validity of a given string <-- executes symbols over DFA
 # if there is not transition for given state and symbol, it fails immediately
