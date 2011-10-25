@@ -5,7 +5,7 @@ BEGIN {
 use Test::More 'no_plan';
 use strict;
 use FLAT;
-use FLAT::DFA;
+use FLAT::DFA::Util;
 use FLAT::NFA;
 use FLAT::PFA;
 use FLAT::Regex::WithExtraOps;
