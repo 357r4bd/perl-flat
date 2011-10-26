@@ -1,7 +1,7 @@
 # This Makefile is for the FLAT extension to perl.
 #
 # It was generated automatically by MakeMaker version
-# 6.57_05 (Revision: 65705) from the contents of
+# 6.56 (Revision: 65600) from the contents of
 # Makefile.PL. Don't edit this file, edit Makefile.PL instead.
 #
 #       ANY CHANGES MADE HERE WILL BE LOST!
@@ -11,7 +11,7 @@
 
 #   MakeMaker Parameters:
 
-#     AUTHOR => [q[.o0o. <estrabd@mailcan.com>]]
+#     AUTHOR => q[.o0o. <estrabd@mailcan.com>]
 #     BUILD_REQUIRES => {  }
 #     NAME => q[FLAT]
 #     PREREQ_PM => {  }
@@ -21,30 +21,30 @@
 
 # --- MakeMaker const_config section:
 
-# These definitions are from config.sh (via /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/5.14.1/darwin-2level/Config.pm).
+# These definitions are from config.sh (via /opt/local/lib/perl5/5.12.3/darwin-multi-2level/Config.pm).
 # They may have been overridden via Makefile.PL or on the command line.
 AR = ar
-CC = cc
+CC = /Developer/usr/bin/llvm-gcc-4.2
 CCCDLFLAGS =  
 CCDLFLAGS =  
 DLEXT = bundle
 DLSRC = dl_dlopen.xs
 EXE_EXT = 
 FULL_AR = /usr/bin/ar
-LD = env MACOSX_DEPLOYMENT_TARGET=10.3 cc
-LDDLFLAGS =  -bundle -undefined dynamic_lookup -L/opt/local/lib -fstack-protector
-LDFLAGS =  -fstack-protector -L/opt/local/lib
+LD = env MACOSX_DEPLOYMENT_TARGET=10.6 /Developer/usr/bin/llvm-gcc-4.2
+LDDLFLAGS = -L/opt/local/lib -arch x86_64 -bundle -undefined dynamic_lookup -fstack-protector
+LDFLAGS = -L/opt/local/lib -arch x86_64 -fstack-protector
 LIBC = 
 LIB_EXT = .a
 OBJ_EXT = .o
 OSNAME = darwin
 OSVERS = 10.8.0
 RANLIB = ranlib
-SITELIBEXP = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/site_perl/5.14.1
-SITEARCHEXP = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/site_perl/5.14.1/darwin-2level
+SITELIBEXP = /opt/local/lib/perl5/site_perl/5.12.3
+SITEARCHEXP = /opt/local/lib/perl5/site_perl/5.12.3/darwin-multi-2level
 SO = dylib
-VENDORARCHEXP = 
-VENDORLIBEXP = 
+VENDORARCHEXP = /opt/local/lib/perl5/vendor_perl/5.12.3/darwin-multi-2level
+VENDORLIBEXP = /opt/local/lib/perl5/vendor_perl/5.12.3
 
 
 # --- MakeMaker constants section:
@@ -66,60 +66,60 @@ INST_BIN = ../blib/bin
 INST_LIB = ../blib/lib
 INST_MAN1DIR = ../blib/man1
 INST_MAN3DIR = ../blib/man3
-MAN1EXT = 1
-MAN3EXT = 3
+MAN1EXT = 1pm
+MAN3EXT = 3pm
 INSTALLDIRS = site
 DESTDIR = 
 PREFIX = $(SITEPREFIX)
-PERLPREFIX = /Users/brett/perl5/perlbrew/perls/perl-5.14.1
-SITEPREFIX = /Users/brett/perl5/perlbrew/perls/perl-5.14.1
-VENDORPREFIX = 
-INSTALLPRIVLIB = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/5.14.1
+PERLPREFIX = /opt/local
+SITEPREFIX = /opt/local
+VENDORPREFIX = /opt/local
+INSTALLPRIVLIB = /opt/local/lib/perl5/5.12.3
 DESTINSTALLPRIVLIB = $(DESTDIR)$(INSTALLPRIVLIB)
-INSTALLSITELIB = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/site_perl/5.14.1
+INSTALLSITELIB = /opt/local/lib/perl5/site_perl/5.12.3
 DESTINSTALLSITELIB = $(DESTDIR)$(INSTALLSITELIB)
-INSTALLVENDORLIB = 
+INSTALLVENDORLIB = /opt/local/lib/perl5/vendor_perl/5.12.3
 DESTINSTALLVENDORLIB = $(DESTDIR)$(INSTALLVENDORLIB)
-INSTALLARCHLIB = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/5.14.1/darwin-2level
+INSTALLARCHLIB = /opt/local/lib/perl5/5.12.3/darwin-multi-2level
 DESTINSTALLARCHLIB = $(DESTDIR)$(INSTALLARCHLIB)
-INSTALLSITEARCH = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/site_perl/5.14.1/darwin-2level
+INSTALLSITEARCH = /opt/local/lib/perl5/site_perl/5.12.3/darwin-multi-2level
 DESTINSTALLSITEARCH = $(DESTDIR)$(INSTALLSITEARCH)
-INSTALLVENDORARCH = 
+INSTALLVENDORARCH = /opt/local/lib/perl5/vendor_perl/5.12.3/darwin-multi-2level
 DESTINSTALLVENDORARCH = $(DESTDIR)$(INSTALLVENDORARCH)
-INSTALLBIN = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/bin
+INSTALLBIN = /opt/local/bin
 DESTINSTALLBIN = $(DESTDIR)$(INSTALLBIN)
-INSTALLSITEBIN = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/bin
+INSTALLSITEBIN = /opt/local/bin
 DESTINSTALLSITEBIN = $(DESTDIR)$(INSTALLSITEBIN)
-INSTALLVENDORBIN = 
+INSTALLVENDORBIN = /opt/local/bin
 DESTINSTALLVENDORBIN = $(DESTDIR)$(INSTALLVENDORBIN)
-INSTALLSCRIPT = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/bin
+INSTALLSCRIPT = /opt/local/bin
 DESTINSTALLSCRIPT = $(DESTDIR)$(INSTALLSCRIPT)
-INSTALLSITESCRIPT = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/bin
+INSTALLSITESCRIPT = /opt/local/bin
 DESTINSTALLSITESCRIPT = $(DESTDIR)$(INSTALLSITESCRIPT)
-INSTALLVENDORSCRIPT = 
+INSTALLVENDORSCRIPT = /opt/local/bin
 DESTINSTALLVENDORSCRIPT = $(DESTDIR)$(INSTALLVENDORSCRIPT)
-INSTALLMAN1DIR = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/man/man1
+INSTALLMAN1DIR = /opt/local/share/man/man1p
 DESTINSTALLMAN1DIR = $(DESTDIR)$(INSTALLMAN1DIR)
-INSTALLSITEMAN1DIR = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/man/man1
+INSTALLSITEMAN1DIR = /opt/local/share/man/man1
 DESTINSTALLSITEMAN1DIR = $(DESTDIR)$(INSTALLSITEMAN1DIR)
-INSTALLVENDORMAN1DIR = 
+INSTALLVENDORMAN1DIR = /opt/local/share/man/man1
 DESTINSTALLVENDORMAN1DIR = $(DESTDIR)$(INSTALLVENDORMAN1DIR)
-INSTALLMAN3DIR = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/man/man3
+INSTALLMAN3DIR = /opt/local/share/man/man3p
 DESTINSTALLMAN3DIR = $(DESTDIR)$(INSTALLMAN3DIR)
-INSTALLSITEMAN3DIR = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/man/man3
+INSTALLSITEMAN3DIR = /opt/local/share/man/man3
 DESTINSTALLSITEMAN3DIR = $(DESTDIR)$(INSTALLSITEMAN3DIR)
-INSTALLVENDORMAN3DIR = 
+INSTALLVENDORMAN3DIR = /opt/local/share/man/man3
 DESTINSTALLVENDORMAN3DIR = $(DESTDIR)$(INSTALLVENDORMAN3DIR)
-PERL_LIB = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/5.14.1
-PERL_ARCHLIB = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/5.14.1/darwin-2level
+PERL_LIB = /opt/local/lib/perl5/5.12.3
+PERL_ARCHLIB = /opt/local/lib/perl5/5.12.3/darwin-multi-2level
 LIBPERL_A = libperl.a
 FIRST_MAKEFILE = Makefile
 MAKEFILE_OLD = Makefile.old
 MAKE_APERL_FILE = Makefile.aperl
 PERLMAINCC = $(CC)
-PERL_INC = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/5.14.1/darwin-2level/CORE
-PERL = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/bin/perl
-FULLPERL = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/bin/perl
+PERL_INC = /opt/local/lib/perl5/5.12.3/darwin-multi-2level/CORE
+PERL = /opt/local/bin/perl
+FULLPERL = /opt/local/bin/perl
 ABSPERL = $(PERL)
 PERLRUN = $(PERL)
 FULLPERLRUN = $(FULLPERL)
@@ -132,9 +132,9 @@ PERM_DIR = 755
 PERM_RW = 644
 PERM_RWX = 755
 
-MAKEMAKER   = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/lib/5.14.1/ExtUtils/MakeMaker.pm
-MM_VERSION  = 6.57_05
-MM_REVISION = 65705
+MAKEMAKER   = /opt/local/lib/perl5/5.12.3/ExtUtils/MakeMaker.pm
+MM_VERSION  = 6.56
+MM_REVISION = 65600
 
 # FULLEXT = Pathname for extension directory (eg Foo/Bar/Oracle).
 # BASEEXT = Basename part of FULLEXT. May be just equal FULLEXT. (eg Oracle)
@@ -210,7 +210,7 @@ PM_TO_BLIB = lib/FLAT/Legacy/FA/PRE.pm \
 
 
 # --- MakeMaker platform_constants section:
-MM_Unix_VERSION = 6.57_05
+MM_Unix_VERSION = 6.56
 PERL_MALLOC_DEF = -DPERL_EXTMALLOC_DEF -Dmalloc=Perl_malloc -Dfree=Perl_mfree -Drealloc=Perl_realloc -Dcalloc=Perl_calloc
 
 
@@ -456,17 +456,17 @@ clean :: clean_subdirs
 	  core.[0-9] $(INST_ARCHAUTODIR)/extralibs.all \
 	  core.[0-9][0-9] $(BASEEXT).bso \
 	  pm_to_blib.ts core.[0-9][0-9][0-9][0-9] \
-	  MYMETA.yml $(BASEEXT).x \
-	  $(BOOTSTRAP) perl$(EXE_EXT) \
-	  tmon.out *$(OBJ_EXT) \
-	  pm_to_blib $(INST_ARCHAUTODIR)/extralibs.ld \
-	  blibdirs.ts core.[0-9][0-9][0-9][0-9][0-9] \
-	  *perl.core core.*perl.*.? \
-	  $(MAKE_APERL_FILE) perl \
-	  $(BASEEXT).def core.[0-9][0-9][0-9] \
-	  mon.out lib$(BASEEXT).def \
-	  perlmain.c perl.exe \
-	  so_locations $(BASEEXT).exp 
+	  $(BASEEXT).x $(BOOTSTRAP) \
+	  perl$(EXE_EXT) tmon.out \
+	  *$(OBJ_EXT) pm_to_blib \
+	  $(INST_ARCHAUTODIR)/extralibs.ld blibdirs.ts \
+	  core.[0-9][0-9][0-9][0-9][0-9] *perl.core \
+	  core.*perl.*.? $(MAKE_APERL_FILE) \
+	  perl $(BASEEXT).def \
+	  core.[0-9][0-9][0-9] mon.out \
+	  lib$(BASEEXT).def perlmain.c \
+	  perl.exe so_locations \
+	  $(BASEEXT).exp 
 	- $(RM_RF) \
 	  blib 
 	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
@@ -506,7 +506,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '    directory:' >> META_new.yml
 	$(NOECHO) $(ECHO) '        - t' >> META_new.yml
 	$(NOECHO) $(ECHO) '        - inc' >> META_new.yml
-	$(NOECHO) $(ECHO) 'generated_by:       ExtUtils::MakeMaker version 6.57_05' >> META_new.yml
+	$(NOECHO) $(ECHO) 'generated_by:       ExtUtils::MakeMaker version 6.56' >> META_new.yml
 	$(NOECHO) $(ECHO) 'meta-spec:' >> META_new.yml
 	$(NOECHO) $(ECHO) '    url:      http://module-build.sourceforge.net/META-spec-v1.4.html' >> META_new.yml
 	$(NOECHO) $(ECHO) '    version:  1.4' >> META_new.yml
@@ -575,7 +575,7 @@ $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
 
 # --- MakeMaker makeaperl section ---
 MAP_TARGET    = ../perl
-FULLPERL      = /Users/brett/perl5/perlbrew/perls/perl-5.14.1/bin/perl
+FULLPERL      = /opt/local/bin/perl
 
 
 # --- MakeMaker test section:
@@ -613,7 +613,7 @@ ppd :
 	$(NOECHO) $(ECHO) '    <ABSTRACT></ABSTRACT>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <AUTHOR>.o0o. &lt;estrabd@mailcan.com&gt;</AUTHOR>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="darwin-2level-5.14" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="darwin-multi-2level-5.12" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    </IMPLEMENTATION>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '</SOFTPKG>' >> $(DISTNAME).ppd
