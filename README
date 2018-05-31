@@ -1,10 +1,9 @@
-The shell script, bin/fash, is installed into /usr/local/bin;  while it provides 
-for a convenient commandline interface to some of FLAT's more practical features, 
-some users may not want it.  It can be SAFELY removed simply by deleting it. 
+This suite of modules started off as a homework assignment for a compiler class I took
+for my MS in computer science at the University of Southern Mississippi. It then became
+the basis for my MS research. and thesis.
 
-Other than the Perl module files for FLAT, not other extra scripts or utilities 
-are installed.
+Github:
+	https://github.com/estrabd/perl-flat
 
 Bug reports:
-
-	https://github.com/estrabd/Perl-FLaT/issues
+	https://github.com/estrabd/perl-flat/issues
