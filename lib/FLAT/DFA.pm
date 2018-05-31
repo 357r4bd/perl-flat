@@ -2,10 +2,9 @@ package FLAT::DFA;
 
 use strict;
 use warnings;
-use parent 'FLAT::NFA';
+use parent qw(FLAT::NFA);
 use Storable qw(dclone);
 use Carp;
-$|++;
 
 sub set_starting {
     my $self = shift;

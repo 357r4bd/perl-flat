@@ -1,8 +1,8 @@
 package FLAT;
+
 use strict;
 use warnings;
 use FLAT::Regex;
-use FLAT::NFA;
 use FLAT::DFA;
 use Carp;
 
@@ -63,12 +63,12 @@ sub symdiff {
 
 sub equals {
     my @params = @_;
-    return $params[0]->symdiff($params[1])->is_empty
+    return $params[0]->symdiff($params[1])->is_empty();
 }
 
 sub is_subset_of {
     my @params = @_;
-    return $params[0]->difference($params[1])->is_empty
+    return $params[0]->difference($params[1])->is_empty;
 }
 
 BEGIN {

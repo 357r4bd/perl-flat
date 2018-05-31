@@ -1,7 +1,8 @@
 package FLAT::FA;
 
 use strict;
-use parent 'FLAT';
+use warnings;
+use parent qw(FLAT);
 use Carp;
 
 use FLAT::Transition::Simple;

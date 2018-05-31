@@ -1,8 +1,9 @@
 package FLAT::PFA;
-use strict;
-use parent 'FLAT::NFA';
-use Carp;
 
+use strict;
+use warnings;
+use parent qw(FLAT::NFA);
+use Carp;
 use FLAT::Transition;
 
 use constant LAMBDA => '#lambda';

@@ -1,7 +1,8 @@
 package FLAT::NFA;
 
 use strict;
-use parent 'FLAT::FA';
+use warnings;
+use parent qw(FLAT::FA);
 
 use FLAT::Transition::Simple;
 use FLAT::Symbol::Regex;
@@ -215,6 +216,11 @@ sub _extend_alphabet {
 }
 
 ######## transformations
+
+sub as_min_dfa {
+    my $self = shift;
+    return $self->as_dfa()->as_min_dfa();
+}
 
 # subset construction
 sub as_dfa {
