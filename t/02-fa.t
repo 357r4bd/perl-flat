@@ -1,27 +1,26 @@
-BEGIN {
-    unshift @INC, '../lib';
-}
+use strict;
+use warnings;
 
-#use Test::More tests => 48;
 use Test::More tests => 23;    # need to add FLAT::Transition tests
 use FLAT;
+use FLAT::FA;
 
 my $fa = FLAT::FA->new;
 
 is(ref $fa, "FLAT::FA", "blessed reference returned");
 
-is_deeply([$fa->get_states], [], "initially no states");
+is_deeply([$fa->get_states()], [], "initially no states");
 
-is($fa->num_states, 0, "initially no states");
+is($fa->num_states(), 0, "initially no states");
 
 ok(!$fa->is_state(0), "initially no states");
 
 my @s = $fa->add_states(5);
 is(scalar(@s), 5, "add_states returns list");
 
-is($fa->num_states, 5, "add_states adds states");
+is($fa->num_states(), 5, "add_states adds states");
 
-is_deeply([sort $fa->get_states], [sort @s], "add_states add states");
+is_deeply([sort $fa->get_states()], [sort @s], "add_states add states");
 
 for (@s) {
     ok($fa->is_state($_), "add_states returns valid states");
@@ -30,9 +29,9 @@ for (@s) {
 my $del = pop @s;
 $fa->delete_states($del);
 
-is($fa->num_states, 4, "delete_states deletes states");
+is($fa->num_states(), 4, "delete_states deletes states");
 
-is_deeply([sort $fa->get_states], [sort @s], "delete_states deletes states");
+is_deeply([sort $fa->get_states()], [sort @s], "delete_states deletes states");
 
 ok(!$fa->is_state($del), "delete_states delete states");
 
@@ -133,6 +132,6 @@ is( $fa->get_transition( $s[0], $s[1] ),
 
 $fa->prune;
 
-is( $fa->num_states,
+is( $fa->num_states(),
     3,
     "prune" );

@@ -1,7 +1,3 @@
-BEGIN {
-    unshift @INC, '../lib';
-}
-
 use Test::More 'no_plan';
 use strict;
 use FLAT;
