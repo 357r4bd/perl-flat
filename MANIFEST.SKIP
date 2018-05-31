@@ -5,3 +5,7 @@ examples
 tinderbox
 unreliable
 util
+MANIFEST.bak
+dist.ini
+MANIFEST.SKIP
+README
