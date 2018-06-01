@@ -304,8 +304,7 @@ sub get_acyclic_sub {
                 push(
                     @ret,
                     sub {
-                        return $self->get_acyclic_sub($adjacent, $nodelist_ref, $dflabel_clone, $string_clone, $accepting_ref,
-                            $lastDFLabel);
+                        return $self->get_acyclic_sub($adjacent, $nodelist_ref, $dflabel_clone, $string_clone, $accepting_ref, $lastDFLabel);
                     }
                 );
                 pop @{$string_ref};
@@ -317,7 +316,7 @@ sub get_acyclic_sub {
     return {
         substack    => [@ret],
         lastDFLabel => $lastDFLabel,
-        string      => ($self->array_is_subset([$start], [@{$accepting_ref}]) ? join('', @{$string_ref}) : undef)
+        string      => ($self->array_is_subset([$start], $accepting_ref) ? join('', @{$string_ref}) : undef)
     };
 }
 
@@ -349,15 +348,16 @@ sub init_acyclic_iterator {
 
 sub new_acyclic_string_generator {
     my $self = shift;
-    return $self->init_acyclic_iterator();
+    my $iterator = $self->init_acyclic_iterator();
+    return $iterator;
 }
 
 sub get_deepdft_sub {
     my $self = shift;
     my ($start, $nodelist_ref, $dflabel_ref, $string_ref, $accepting_ref, $lastDFLabel, $max) = @_;
     my @ret = ();
-    my $c1  = @{$dflabel_ref->{$start}};
-    if ($c1 < $max) {
+    my $c1  = (ref $dflabel_ref eq 'HASH') ? @{$dflabel_ref->{$start}} : 0;
+    if ($max and $c1 < $max) {
         push(@{$dflabel_ref->{$start}}, ++$lastDFLabel);
         foreach my $adjacent (keys(%{$nodelist_ref->{$start}})) {
             my $c2 = @{$dflabel_ref->{$adjacent}};
@@ -381,7 +381,7 @@ sub get_deepdft_sub {
     return {
         substack    => [@ret],
         lastDFLabel => $lastDFLabel,
-        string      => ($self->array_is_subset([$start], [@{$accepting_ref}]) ? join('', @{$string_ref}) : undef)
+        string      => ($self->array_is_subset([$start], $accepting_ref) ? join('', @{$string_ref}) : undef)
     };
 }
 

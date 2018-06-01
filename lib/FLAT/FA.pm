@@ -322,6 +322,8 @@ sub array_is_subset {
     my $self     = shift;
     my $set1     = shift;
     my $set2     = shift;
+    $set1 = [ $set1 ] if not ref $set1;
+    $set2 = [ $set2 ] if not ref $set2;
     my $ok       = 1;
     my %setcount = ();
     foreach ($self->array_unique(@{$set1}), $self->array_unique(@{$set2})) {

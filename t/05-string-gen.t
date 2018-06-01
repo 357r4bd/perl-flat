@@ -4,6 +4,7 @@ BEGIN {
 
 use Test::More 'no_plan';
 use strict;
+use warnings;
 use FLAT;
 use FLAT::DFA;
 use FLAT::NFA;
@@ -19,12 +20,12 @@ foreach my $evil (@EVIL) {
     # default depth
     my $next = $DFA->new_acyclic_string_generator();
     while (my $string = $next->()) {
-        ok($DFA->is_valid_string($string));
+        ok($DFA->is_valid_string($string), "string '$string'");
     }
     # deeper
     $next = $DFA->new_deepdft_string_generator(10);
     while (my $string = $next->()) {
-        ok($DFA->is_valid_string($string));
+        ok($DFA->is_valid_string($string), "string '$string'");
     }
 }
 
@@ -34,11 +35,11 @@ for (1 .. 100) {
     # default depth
     my $next = $DFA->new_acyclic_string_generator();
     while (my $string = $next->()) {
-        ok($DFA->is_valid_string($string));
+        ok($DFA->is_valid_string($string), "string '$string'");
     }
     # a little deeper
     $next = $DFA->new_deepdft_string_generator(2);
     while (my $string = $next->()) {
-        ok($DFA->is_valid_string($string));
+        ok($DFA->is_valid_string($string), "string '$string'");
     }
 }
