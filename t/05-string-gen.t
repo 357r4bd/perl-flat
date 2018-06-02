@@ -17,6 +17,9 @@ my @EVIL = qw/a* a*+b a*+b* a*&b a*&b*/;
 foreach my $evil (@EVIL) {
     my $PRE = FLAT::Regex::WithExtraOps->new($evil);
     my $DFA = $PRE->as_pfa->as_nfa->as_dfa->as_min_dfa->trim_sinks;
+    isa_ok($DFA, 'FLAT::DFA::Minimal');
+    can_ok($DFA, qw/set_equivalence_classes get_equivalence_classes/);
+    ok(ref $DFA->get_equivalence_classes eq 'ARRAY', q{Equivalence class for minimal DFA is an array ref});
     # default depth
     my $next = $DFA->new_acyclic_string_generator();
     while (my $string = $next->()) {

@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use parent qw(FLAT::NFA);
 use Storable qw(dclone);
+use FLAT::DFA::Minimal;
 use Carp;
 
 sub set_starting {
@@ -129,7 +130,7 @@ sub as_min_dfa {
         }
         last if !$changed;
     }
-    my $result = (ref $self)->new;
+    my $result = FLAT::DFA::Minimal->new;
     my %newstate;
     my @classes;
     for my $s (0 .. $N - 1) {
@@ -149,7 +150,8 @@ sub as_min_dfa {
     }
     $result->set_starting($newstate{$start});
     $result->set_accepting($newstate{$_}) for $self->get_accepting;
-    $result;
+    $result->set_equivalence_classes(\@classes);
+    return $result;
 }
 
 # the validity of a given string <-- executes symbols over DFA
