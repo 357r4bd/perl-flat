@@ -1,3 +1,5 @@
 Suite of Regular Language modelling tools that were
 originally created as part of a homework assignment.
 back in 2006.
+
+https://en.wikipedia.org/wiki/Regular_language#Closure_properties
